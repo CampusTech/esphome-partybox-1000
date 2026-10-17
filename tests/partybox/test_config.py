@@ -105,6 +105,55 @@ class EntityConfigTests(unittest.TestCase):
         self.assertEqual(config["tws_connected"]["entity_category"], "diagnostic")
         self.assertEqual(config["connect"]["entity_category"], "diagnostic")
 
+    def test_low_level_entities_start_disabled_in_home_assistant(self):
+        config = self.validate()
+        for key in [
+            "free_heap",
+            "minimum_heap",
+            "largest_free_block",
+            "volume_steps",
+            "received_words",
+            "dropped_events",
+            "received_audio_bytes",
+            "queued_commands",
+            "snapshot_age",
+            "last_word",
+            "last_command",
+            "volume_confidence",
+            "mute_confidence",
+            "source_confidence",
+            "power_confidence",
+            "bass_confidence",
+            "lighting_confidence",
+            "activity_confidence",
+            "power_estimate",
+            "query_version",
+            "smart_dj",
+            "voice_cancel",
+        ]:
+            with self.subTest(entity=key):
+                self.assertTrue(config[key]["disabled_by_default"])
+        for key in [
+            "media_player",
+            "source",
+            "bass",
+            "lighting",
+            "connect",
+            "standby",
+            "wake",
+            "tws_connected",
+            "spp_connected",
+            "signal_activity",
+            "firmware_version",
+        ]:
+            with self.subTest(entity=key):
+                self.assertFalse(config[key]["disabled_by_default"])
+
+    def test_hidden_defaults_can_be_overridden_without_renaming(self):
+        config = self.validate(free_heap={"disabled_by_default": False})
+        self.assertFalse(config["free_heap"]["disabled_by_default"])
+        self.assertEqual(config["free_heap"]["name"], "Free heap")
+
     def test_invalid_entity_options_still_fail(self):
         with self.assertRaises(cv.Invalid):
             self.validate(bass={"misspelled_name": "Bass"})

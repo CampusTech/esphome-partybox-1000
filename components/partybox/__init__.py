@@ -13,7 +13,7 @@ from esphome.components import (
     sensor,
     text_sensor,
 )
-from esphome.const import CONF_ID, CONF_NAME
+from esphome.const import CONF_DISABLED_BY_DEFAULT, CONF_ID, CONF_NAME
 from esphome.const import __version__ as ESPHOME_VERSION
 from esphome.core import CORE
 
@@ -119,6 +119,16 @@ SENSOR_UNITS = {
     "snapshot_age": "s",
 }
 
+HIDDEN_BY_DEFAULT = (
+    set(SENSORS)
+    | (set(TEXTS) - {"firmware_version"})
+    | {
+        "query_version",
+        "smart_dj",
+        "voice_cancel",
+    }
+)
+
 
 def entity_schema(key, schema):
     """Apply names before ESPHome validates entity visibility; false omits it."""
@@ -128,7 +138,11 @@ def entity_schema(key, schema):
             value = {}
         if not isinstance(value, dict):
             raise cv.Invalid("Expected entity options or false to omit this entity")
-        return {CONF_NAME: DEFAULT_NAMES[key], **value}
+        return {
+            CONF_NAME: DEFAULT_NAMES[key],
+            CONF_DISABLED_BY_DEFAULT: key in HIDDEN_BY_DEFAULT,
+            **value,
+        }
 
     return cv.Any(cv.boolean_false, cv.All(with_default_name, schema))
 

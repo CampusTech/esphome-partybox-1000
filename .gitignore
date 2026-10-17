@@ -5,3 +5,5 @@
 **/.esphome/
 **/secrets.yaml
 .DS_Store
+# Personal firmware exports contain deployment credentials.
+/dist/

@@ -8,6 +8,7 @@ No device upload or discovery command is invoked.
 import argparse
 import importlib.metadata
 import importlib.util
+import re
 import shutil
 import subprocess
 import sys
@@ -50,8 +51,18 @@ def esphome(config, *arguments, success=True, expected_error=None, stream=False)
     return result.stdout or ""
 
 
+def generated_entity_flags(generated, name):
+    match = re.search(
+        rf'App\.register_\w+\([^,]+, "{re.escape(name)}", [^,]+, (\d+)(?:UL)?\)',
+        generated,
+    )
+    if not match:
+        raise ValueError(f"Generated entity metadata was not found for {name}")
+    return int(match[1])
+
+
 def prepare(workspace):
-    for name in ("components", "examples"):
+    for name in ("components", "examples", "packages"):
         shutil.copytree(
             ROOT / name,
             workspace / name,
@@ -66,16 +77,18 @@ def run_checks(workspace, examples, flash, compile_target=False, negative=True):
         [sys.executable, str(ROOT / "tests/partybox/test_config.py")], check=True
     )
     prepare(workspace)
+    full = workspace / "examples/partybox-1000.yaml"
+    full.write_text(
+        full.read_text().replace(
+            "partybox_flash_size: 4MB", f"partybox_flash_size: {flash}"
+        )
+    )
     for example in examples:
         config = (
             workspace
             / "examples"
             / ("minimal.yaml" if example == "minimal" else "partybox-1000.yaml")
         )
-        text = config.read_text()
-        if "flash_size: 4MB" not in text:
-            raise ValueError(f"Expected 4MB default in {config.name}")
-        config.write_text(text.replace("flash_size: 4MB", f"flash_size: {flash}"))
         esphome(config, "config")
         esphome(config, "compile", "--only-generate")
         sources = list((workspace / "examples/.esphome/build").glob("*/src/main.cpp"))
@@ -90,6 +103,11 @@ def run_checks(workspace, examples, flash, compile_target=False, negative=True):
             raise ValueError("Generated Wi-Fi configuration must disable roaming")
         if "set_spp_enabled(true)" not in generated:
             raise ValueError("SPP must be enabled by default")
+        if example == "full":
+            if not generated_entity_flags(generated, "Free heap") & (1 << 25):
+                raise ValueError("Low-level diagnostics must start disabled in HA")
+            if generated_entity_flags(generated, "Player") & (1 << 25):
+                raise ValueError("The media player must start enabled in HA")
         if compile_target:
             print(f"Compiling {example} ({flash})", flush=True)
             esphome(config, "compile", stream=True)
@@ -99,24 +117,20 @@ def run_checks(workspace, examples, flash, compile_target=False, negative=True):
                 f"PASS: {example} {flash}: {report['sdk']}, all {len(report['hooks'])} linked hooks"
             )
         if negative:
-            for label, old, new, diagnostic in [
+            for label, override, diagnostic in [
                 (
                     "wrong-sdk",
-                    "version: 5.5.5",
-                    "version: 5.5.4",
+                    "esp32:\n  framework:\n    version: 5.5.4\n",
                     "partybox requires the ESP-IDF framework at version 5.5.5",
                 ),
                 (
                     "wrong-chip",
-                    "board: esp32dev",
-                    "board: esp32-s3-devkitc-1",
+                    "esp32:\n  board: esp32-s3-devkitc-1\n",
                     "This feature is only available on ESP32",
                 ),
             ]:
-                if old not in config.read_text():
-                    raise ValueError(f"Cannot construct {label} rejection case")
                 rejected = config.with_name(label + ".yaml")
-                rejected.write_text(config.read_text().replace(old, new))
+                rejected.write_text(config.read_text() + "\n" + override)
                 esphome(rejected, "config", success=False, expected_error=diagnostic)
         print(
             f"PASS: {example} {flash} schema, generated roaming/SPP settings and unsupported targets",
@@ -140,6 +154,7 @@ def run_checks(workspace, examples, flash, compile_target=False, negative=True):
             "  media_player:\n    name: Office player\n"
             "  bass:\n    icon: mdi:music\n"
             "  last_word: false\n"
+            "  free_heap:\n    disabled_by_default: false\n"
         ),
     }
     for label, options in cases.items():
@@ -162,6 +177,8 @@ def run_checks(workspace, examples, flash, compile_target=False, negative=True):
             ):
                 raise ValueError("Disabled entities were attached to the controller")
         else:
+            if generated_entity_flags(generated, "Free heap") & (1 << 25):
+                raise ValueError("User diagnostic visibility override was ignored")
             if '"Office player"' not in generated or '"Bass boost"' not in generated:
                 raise ValueError("Entity name/default overrides were not generated")
             if '"Last TWS word"' in generated:

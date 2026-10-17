@@ -1,0 +1,49 @@
+# Original ESP32 only. ESPHome and ESP-IDF pins are verified by native hook checks.
+substitutions:
+  name: partybox-1000
+  friendly_name: PartyBox 1000
+  partybox_flash_size: 4MB
+  partybox_component_source: github://CampusTech/esphome-partybox-1000@v0.1.0-beta.1
+
+esphome:
+  name: ${name}
+  friendly_name: ${friendly_name}
+  min_version: 2026.9.1
+  project:
+    name: campustech.partybox_1000
+    version: 0.1.0-beta.1
+
+esp32:
+  board: esp32dev
+  flash_size: ${partybox_flash_size}
+  framework:
+    type: esp-idf
+    version: 5.5.5
+    # Match the tested placement; roaming scans remain disabled below.
+    sdkconfig_options:
+      CONFIG_BTDM_CTRL_PINNED_TO_CORE_0: "y"
+      CONFIG_BTDM_CTRL_PINNED_TO_CORE_1: "n"
+      CONFIG_BT_BLUEDROID_PINNED_TO_CORE_0: "y"
+      CONFIG_BT_BLUEDROID_PINNED_TO_CORE_1: "n"
+      CONFIG_ESP_WIFI_TASK_PINNED_TO_CORE_0: "n"
+      CONFIG_ESP_WIFI_TASK_PINNED_TO_CORE_1: "y"
+
+external_components:
+  - source: ${partybox_component_source}
+    components: [partybox]
+
+logger:
+  level: INFO
+
+api:
+  reboot_timeout: 0s
+
+wifi:
+  # Stationary bridge: avoid periodic background roaming scans.
+  post_connect_roaming: false
+  power_save_mode: LIGHT
+  ap:
+    ssid: ${friendly_name} Setup
+  reboot_timeout: 0s
+
+captive_portal:

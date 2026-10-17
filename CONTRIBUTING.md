@@ -15,3 +15,17 @@ Hardware reports are welcome. Useful checks include older speaker revisions,
 long connection runs, reconnecting after standby/full power-off, and USB power
 retention. Report what happened rather than assuming a disconnect means the
 speaker switched off.
+
+## Releasing
+
+Update the project version and component-source tag together in
+`packages/partybox-1000.yaml`, the versioned README examples, and `CHANGELOG.md`.
+Include merged PRs and contributor attribution in the changelog. Run
+`python tools/release_notes.py vVERSION` and the normal checks before pushing the
+annotated version tag. The tag workflow repeats the host/build matrix and
+publishes only after it passes, appending GitHub's generated merged-PR and
+contributor notes. Alpha/beta/RC tags are marked prereleases.
+
+Personal firmware exports contain deployment credentials. Do not upload them to
+GitHub Releases, issues or Actions artifacts. The public release provides the
+versioned source/package and the private firmware build/export command.
