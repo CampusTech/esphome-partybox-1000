@@ -104,6 +104,18 @@
       }
     },
     {
+      "path": "manuals/partybox-1000-service-v1.1.pdf",
+      "size": 15711524,
+      "sha256": "9392d3e3ffd6913a0881006dcfd9b1e5e88d8d46d2b2929489a56ff258a067ae",
+      "model": "JBL PartyBox 1000",
+      "version": "1.1 (February 2020)",
+      "type": "manual",
+      "source_filename": "JBL PARTYBOX 1000_sm.pdf",
+      "source": {
+        "kind": "user-supplied"
+      }
+    },
+    {
       "path": "manuals/partybox-1000-service-v1.2.pdf",
       "size": 10789900,
       "sha256": "19b64fa79ec8b159040cd9889c0c600c10c8d67e344ec7d1abb785e5cb3b5ab4",
