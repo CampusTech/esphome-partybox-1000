@@ -18,6 +18,25 @@ with patch.object(sys, "path", [str(TOOLS), *sys.path]):
 SDK_ERROR = "partybox requires the ESP-IDF framework at version 5.5.5"
 
 
+class StreamedCompileTests(unittest.TestCase):
+    def test_success_streams_output_and_returns_empty_string(self):
+        result = subprocess.CompletedProcess([], 0, None)
+        with patch.object(checks.subprocess, "run", return_value=result) as run:
+            self.assertEqual(
+                checks.esphome(Path("full.yaml"), "compile", stream=True), ""
+            )
+        self.assertIsNone(run.call_args.kwargs["stdout"])
+        self.assertEqual(run.call_args.kwargs["stderr"], subprocess.STDOUT)
+
+    def test_failure_with_live_output_reports_exit_code_and_config(self):
+        result = subprocess.CompletedProcess([], 7, None)
+        with patch.object(checks.subprocess, "run", return_value=result):
+            with self.assertRaisesRegex(
+                RuntimeError, r"compile.*full.yaml.*exit code 7.*output above"
+            ):
+                checks.esphome(Path("full.yaml"), "compile", stream=True)
+
+
 class RejectedConfigTests(unittest.TestCase):
     def test_unrelated_failure_cannot_satisfy_negative_case(self):
         result = subprocess.CompletedProcess([], 1, "YAML parse error: invalid syntax")

@@ -25,24 +25,28 @@ speaker_mac: '02:00:00:00:00:01'
 """
 
 
-def esphome(config, *arguments, success=True, expected_error=None):
+def esphome(config, *arguments, success=True, expected_error=None, stream=False):
     if not success and not expected_error:
         raise ValueError("Negative configuration checks require an expected diagnostic")
     result = subprocess.run(
         [sys.executable, "-m", "esphome", *arguments, str(config)],
         text=True,
-        stdout=subprocess.PIPE,
+        stdout=None if stream else subprocess.PIPE,
         stderr=subprocess.STDOUT,
     )
     if success and result.returncode:
-        raise RuntimeError(result.stdout)
+        raise RuntimeError(
+            result.stdout
+            or f"ESPHome {' '.join(arguments)} failed for {config.name} "
+            f"(exit code {result.returncode}); see output above"
+        )
     if not success and not result.returncode:
         raise RuntimeError(f"Unsupported configuration was accepted: {config.name}")
     if not success and expected_error not in result.stdout:
         raise RuntimeError(
             f"{config.name} failed without expected diagnostic {expected_error!r}:\n{result.stdout}"
         )
-    return result.stdout
+    return result.stdout or ""
 
 
 def prepare(workspace):
@@ -84,7 +88,7 @@ def run_checks(workspace, examples, flash, compile_target=False, negative=True):
             raise ValueError("SPP must be enabled by default")
         if compile_target:
             print(f"Compiling {example} ({flash})", flush=True)
-            print(esphome(config, "compile"), end="")
+            esphome(config, "compile", stream=True)
             build = source.parents[1] / "build"
             report = verify_build(build)
             print(
