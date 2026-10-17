@@ -13,7 +13,7 @@ from esphome.components import (
     sensor,
     text_sensor,
 )
-from esphome.const import CONF_ID
+from esphome.const import CONF_ID, CONF_NAME
 from esphome.const import __version__ as ESPHOME_VERSION
 from esphome.core import CORE
 
@@ -77,31 +77,105 @@ TEXTS = [
     "activity_confidence",
 ]
 
+DEFAULT_NAMES = {
+    "media_player": "Player",
+    "source": "Source",
+    "bass": "Bass boost",
+    "lighting": "Lighting",
+    "connect": "Connect Bluetooth",
+    "standby": "Standby",
+    "wake": "Wake",
+    "query_version": "Query firmware version",
+    "volume_steps": "Volume steps",
+    "free_heap": "Free heap",
+    "minimum_heap": "Minimum heap",
+    "largest_free_block": "Largest free block",
+    "received_words": "Received TWS words",
+    "dropped_events": "Dropped events",
+    "received_audio_bytes": "Received audio bytes",
+    "queued_commands": "Queued commands",
+    "snapshot_age": "Snapshot age",
+    "tws_connected": "TWS connected",
+    "spp_connected": "SPP connected",
+    "signal_activity": "Selected input signal",
+    "smart_dj": "Smart DJ reported",
+    "voice_cancel": "Voice cancel reported",
+    "volume_confidence": "Volume confidence",
+    "mute_confidence": "Mute confidence",
+    "source_confidence": "Source confidence",
+    "power_confidence": "Power confidence",
+    "bass_confidence": "Bass confidence",
+    "lighting_confidence": "Lighting confidence",
+    "last_command": "Last command",
+    "firmware_version": "Firmware version",
+    "last_word": "Last TWS word",
+    "power_estimate": "Power estimate",
+    "activity_confidence": "Activity confidence",
+}
+SENSOR_UNITS = {
+    "free_heap": "B",
+    "minimum_heap": "B",
+    "largest_free_block": "B",
+    "snapshot_age": "s",
+}
+
+
+def entity_schema(key, schema):
+    """Apply names before ESPHome validates entity visibility; false omits it."""
+
+    def with_default_name(value):
+        if value is None or value is True:
+            value = {}
+        if not isinstance(value, dict):
+            raise cv.Invalid("Expected entity options or false to omit this entity")
+        return {CONF_NAME: DEFAULT_NAMES[key], **value}
+
+    return cv.Any(cv.boolean_false, cv.All(with_default_name, schema))
+
+
 schema = {
     cv.GenerateID(): cv.declare_id(PartyBox),
     cv.Required("mac_address"): cv.mac_address,
     cv.Optional("spp_enabled", default=True): cv.boolean,
-    cv.Optional("media_player"): media_player.media_player_schema(Player),
+    cv.Optional("media_player", default={}): entity_schema(
+        "media_player", media_player.media_player_schema(Player)
+    ),
 }
 for key in CHOICES:
-    schema[cv.Optional(key)] = select.select_schema(Choice)
+    schema[cv.Optional(key, default={})] = entity_schema(
+        key, select.select_schema(Choice)
+    )
 for key in ACTIONS:
-    schema[cv.Optional(key)] = button.button_schema(
-        Action,
-        entity_category="diagnostic"
-        if key in ("connect", "query_version")
-        else cv.UNDEFINED,
+    schema[cv.Optional(key, default={})] = entity_schema(
+        key,
+        button.button_schema(
+            Action,
+            entity_category="diagnostic"
+            if key in ("connect", "query_version")
+            else cv.UNDEFINED,
+        ),
     )
 for key in SENSORS:
-    schema[cv.Optional(key)] = sensor.sensor_schema(entity_category="diagnostic")
+    schema[cv.Optional(key, default={})] = entity_schema(
+        key,
+        sensor.sensor_schema(
+            entity_category="diagnostic",
+            accuracy_decimals=0,
+            unit_of_measurement=SENSOR_UNITS.get(key, cv.UNDEFINED),
+        ),
+    )
 for key in BINARIES:
-    schema[cv.Optional(key)] = binary_sensor.binary_sensor_schema(
-        entity_category="diagnostic" if key.endswith("connected") else cv.UNDEFINED
+    schema[cv.Optional(key, default={})] = entity_schema(
+        key,
+        binary_sensor.binary_sensor_schema(
+            entity_category="diagnostic" if key.endswith("connected") else cv.UNDEFINED
+        ),
     )
 for key in TEXTS:
-    schema[cv.Optional(key)] = text_sensor.text_sensor_schema(
-        entity_category="diagnostic"
+    schema[cv.Optional(key, default={})] = entity_schema(
+        key, text_sensor.text_sensor_schema(entity_category="diagnostic")
     )
+
 CONFIG_SCHEMA = cv.All(
     cv.Schema(schema).extend(cv.COMPONENT_SCHEMA),
     esp32.only_on_variant(supported=["ESP32"]),
@@ -127,15 +201,15 @@ async def to_code(config):
     await cg.register_component(var, config)
     cg.add(var.set_peer_address(config["mac_address"].as_hex))
     cg.add(var.set_spp_enabled(config["spp_enabled"]))
-    if "media_player" in config:
+    if config["media_player"] is not False:
         child = await media_player.new_media_player(config["media_player"], var)
         cg.add(var.set_player(child))
     for key, (role, options) in CHOICES.items():
-        if key in config:
+        if config[key] is not False:
             child = await select.new_select(config[key], var, role, options=options)
             cg.add(var.set_choice(role, child))
     for key, role in ACTIONS.items():
-        if key in config:
+        if config[key] is not False:
             await button.new_button(config[key], var, role)
     for names, module, method in [
         (SENSORS, sensor, "set_sensor"),
@@ -143,7 +217,7 @@ async def to_code(config):
         (TEXTS, text_sensor, "set_text"),
     ]:
         for role, key in enumerate(names):
-            if key in config:
+            if config[key] is not False:
                 child = await getattr(
                     module, "new_" + module.__name__.rsplit(".", 1)[-1]
                 )(config[key])

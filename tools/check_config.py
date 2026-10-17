@@ -7,6 +7,7 @@ No device upload or discovery command is invoked.
 
 import argparse
 import importlib.metadata
+import importlib.util
 import shutil
 import subprocess
 import sys
@@ -61,6 +62,9 @@ def prepare(workspace):
 
 
 def run_checks(workspace, examples, flash, compile_target=False, negative=True):
+    subprocess.run(
+        [sys.executable, str(ROOT / "tests/partybox/test_config.py")], check=True
+    )
     prepare(workspace)
     for example in examples:
         config = (
@@ -118,6 +122,51 @@ def run_checks(workspace, examples, flash, compile_target=False, negative=True):
             f"PASS: {example} {flash} schema, generated roaming/SPP settings and unsupported targets",
             flush=True,
         )
+
+    base = (
+        (workspace / "examples/partybox-1000.yaml")
+        .read_text()
+        .split("\npartybox:\n", 1)[0]
+    )
+    # Exercise omission of every supported entity, not only the example subset.
+    spec = importlib.util.spec_from_file_location(
+        "partybox_schema", ROOT / "components/partybox/__init__.py"
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    cases = {
+        "disabled": "".join(f"  {key}: false\n" for key in module.DEFAULT_NAMES),
+        "overrides": (
+            "  media_player:\n    name: Office player\n"
+            "  bass:\n    icon: mdi:music\n"
+            "  last_word: false\n"
+        ),
+    }
+    for label, options in cases.items():
+        config = workspace / "examples" / f"entities-{label}.yaml"
+        config.write_text(
+            base + "\npartybox:\n  mac_address: !secret speaker_mac\n" + options
+        )
+        esphome(config, "compile", "--only-generate")
+        source = workspace / "examples/.esphome/build/partybox-1000/src/main.cpp"
+        generated = source.read_text()
+        if label == "disabled":
+            if any(
+                f"partybox::{kind}(" in generated
+                for kind in ("Player", "Choice", "Action")
+            ):
+                raise ValueError("Disabled entity objects were generated")
+            if any(
+                f"->set_{kind}(" in generated
+                for kind in ("player", "choice", "sensor", "binary", "text")
+            ):
+                raise ValueError("Disabled entities were attached to the controller")
+        else:
+            if '"Office player"' not in generated or '"Bass boost"' not in generated:
+                raise ValueError("Entity name/default overrides were not generated")
+            if '"Last TWS word"' in generated:
+                raise ValueError("Explicitly disabled last_word was generated")
+        print(f"PASS: {label} entity code generation", flush=True)
 
 
 def main():

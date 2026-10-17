@@ -58,12 +58,37 @@ wifi:
 
 captive_portal:
 
+# Player and link status only; omit other default entities.
 partybox:
   id: jbl
   mac_address: !secret speaker_mac
-  media_player:
-    name: Player
-  tws_connected:
-    name: TWS connected
-  spp_connected:
-    name: SPP connected
+  source: false
+  bass: false
+  lighting: false
+  connect: false
+  standby: false
+  wake: false
+  query_version: false
+  signal_activity: false
+  smart_dj: false
+  voice_cancel: false
+  volume_steps: false
+  volume_confidence: false
+  mute_confidence: false
+  source_confidence: false
+  power_confidence: false
+  bass_confidence: false
+  lighting_confidence: false
+  activity_confidence: false
+  power_estimate: false
+  last_command: false
+  firmware_version: false
+  last_word: false
+  free_heap: false
+  minimum_heap: false
+  largest_free_block: false
+  received_words: false
+  dropped_events: false
+  received_audio_bytes: false
+  queued_commands: false
+  snapshot_age: false

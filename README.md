@@ -40,8 +40,9 @@ those retained values matter. See [protocol and state semantics](docs/protocol.m
    set `flash_size: 8MB` only for a board fitted with 8 MB. More flash adds no RAM.
 2. Clone this repository and choose [the complete configuration](examples/partybox-1000.yaml)
    or [the minimal configuration](examples/minimal.yaml). Give each node a unique
-   name. The minimal example has the player and link status; the complete example
-   adds source, bass, lighting and diagnostics. Keep the version pins and radio settings.
+   name. The default configuration includes all controls and diagnostics. The
+   minimal example opts out of everything except the player and link status.
+   Keep the version pins and radio settings.
 
    ```sh
    git clone https://github.com/CampusTech/esphome-partybox-1000.git
@@ -91,9 +92,32 @@ external_components:
     components: [partybox]
 ```
 
-Pin a reviewed commit instead of `main` for a fixed deployment. All entity
-sections under `partybox:` are optional. A separate source select is necessary
-because ESPHome's native media-player API has no source-selection field.
+Pin a reviewed commit instead of `main` for a fixed deployment. All PartyBox
+entities are created with built-in names, units and precision. Only the speaker
+MAC is required under `partybox:`:
+
+```yaml
+partybox:
+  mac_address: !secret speaker_mac
+```
+
+Add an entity section only to override its settings, or use `false` to omit it:
+
+```yaml
+partybox:
+  mac_address: !secret speaker_mac
+  media_player:
+    name: Office player
+  bass:
+    icon: mdi:music
+  last_word: false
+```
+
+Empty sections (`bass: {}` or `bass:`) keep the defaults. Existing configurations
+with explicit names continue to work. To retain a deliberately smaller entity
+set, opt out of unwanted entities as shown in [the minimal example](examples/minimal.yaml).
+A separate source select is necessary because ESPHome's native media-player API
+has no source-selection field.
 
 ## Validation and limits
 
