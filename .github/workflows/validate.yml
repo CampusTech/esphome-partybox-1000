@@ -1,0 +1,57 @@
+name: Validate
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  host:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Portable production-code regressions and release checks
+        run: python tools/check.py
+
+  firmware:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - example: full
+            flash: 4MB
+          - example: full
+            flash: 8MB
+          - example: minimal
+            flash: 4MB
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+          cache-dependency-path: requirements.txt
+      - name: Install pinned ESPHome
+        run: python -m pip install -r requirements.txt
+      - name: Cache ESPHome toolchains
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/esphome
+          key: esphome-2026.9.1-idf-5.5.5-${{ runner.os }}-${{ runner.arch }}-v1
+      - name: Validate, compile and inspect final linked hooks
+        run: python tools/check_config.py --example '${{ matrix.example }}' --flash '${{ matrix.flash }}' --compile
+      # No firmware upload or artifact publication. Test secrets and all generated
+      # firmware live only in a temporary directory deleted by check_config.py.

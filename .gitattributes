@@ -1,0 +1,4 @@
+* text=auto
+*.bin binary
+*.pdf binary
+reference/** linguist-vendored

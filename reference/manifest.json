@@ -1,0 +1,144 @@
+{
+  "schema_version": 1,
+  "path_base": "reference/",
+  "hash_algorithm": "sha256",
+  "notes": [
+    "All archived payloads preserve their original bytes. Renamed PDF filenames are descriptive only.",
+    "Source archive hashes were recomputed locally and each recorded archive member was compared byte-for-byte. Archives themselves are omitted to avoid duplicate payloads.",
+    "Hashes establish local identity, not publisher authenticity, redistribution rights, hardware compatibility, or permission to flash.",
+    "Firmware and third-party manuals retain their original rights and are outside the project MIT license."
+  ],
+  "files": [
+    {
+      "path": "partybox-1000/PB1000_FW_V63_FULL.bin",
+      "size": 33554432,
+      "sha256": "0f13a8c0e264ad8f78b880f4246bab66497a5d38a975b0da5bf07f97c4b208db",
+      "model": "JBL PartyBox 1000",
+      "version": "V63",
+      "type": "FULL",
+      "source_filename": "PB1000_FW_V63_FULL.bin",
+      "source": {
+        "kind": "manufacturer-download",
+        "url": "https://support.jbl.com/on/demandware.static/-/Sites-masterCatalog_Harman/default/dw105186d8/pdfs/Firmware_Update_PartyBox1000_V63_September2019.zip",
+        "archive_filename": "Firmware_Update_PartyBox1000_V63_September2019.zip",
+        "archive_sha256": "4df385344a549d8af9bfd61939199ba3f1d20427c1b0b8b444ccee411c42e9ff"
+      }
+    },
+    {
+      "path": "partybox-1000/PB1000_FW_V64_FULL.bin",
+      "size": 33554432,
+      "sha256": "3329d1e74c96b44c431e7359b41e1988d72bed45e0b7b1cfa3dfa69b7e11e436",
+      "model": "JBL PartyBox 1000",
+      "version": "V64",
+      "type": "FULL",
+      "source_filename": "PB1000_FW_V64_FULL.bin",
+      "source": {
+        "kind": "user-supplied",
+        "archive_filename": "jbl.zip",
+        "archive_sha256": "6c903c8b419cc3696bb04e7ca57733272bb4d7bd257c4226fdc914a86ac7f0bf",
+        "nested_archive_filename": "Software+upgrade+V64.zip",
+        "nested_archive_sha256": "7960ca409c110cada67aab02660720fb8128d2d89decb4c6d2a88e5f128784cd",
+        "associated_thread_url": "https://www.reddit.com/r/JBL/comments/17hz0cd/jbl_partybox_1000_broken/k7ec732/",
+        "note": "Archive bytes verified locally; identity with the current file linked by the thread was not independently established."
+      }
+    },
+    {
+      "path": "partybox-1000/PB1000_CR_202101070V75.bin",
+      "size": 2385920,
+      "sha256": "d7c94ce403afaf784045c56e42e104dfa5f9b51c9cf6f2e4ed2093bd1824e44d",
+      "model": "JBL PartyBox 1000",
+      "version": "V75",
+      "type": "MAIN",
+      "source_filename": "PB1000_CR_202101070V75.bin",
+      "source": {
+        "kind": "user-supplied",
+        "note": "Supplied as an extracted file; source archive and publisher download identity were not verified."
+      }
+    },
+    {
+      "path": "partybox-100/jbl_partybox100_good.bin",
+      "size": 8388608,
+      "sha256": "5cf528f7a09b2f527de4d2f98c3b11bab740d57829b449798d5f9774ea707d21",
+      "model": "JBL PartyBox 100",
+      "version": null,
+      "type": "comparison",
+      "source_filename": "jbl_partybox100_good.bin",
+      "source": {
+        "kind": "user-supplied",
+        "archive_filename": "jbl_partybox_100_firmware.zip",
+        "archive_sha256": "37aee975b83f09862e8b681c3638e00e0389149be76b2b7425952791fbc8fffb",
+        "note": "Uploader describes a working-unit flash clone; firmware version and independent operational verification are unavailable."
+      }
+    },
+    {
+      "path": "manuals/partybox-1000-v63-update-instructions.pdf",
+      "size": 88289,
+      "sha256": "aaebd410984c491a7349a0d9f496109e5276ee914b7cba8b4e1004392eaef460",
+      "model": "JBL PartyBox 1000",
+      "version": "V63",
+      "type": "manual",
+      "source_filename": "SC02943_Partybox_1000_Update_Instructions_V1_LR.pdf",
+      "source": {
+        "kind": "manufacturer-download",
+        "url": "https://support.jbl.com/on/demandware.static/-/Sites-masterCatalog_Harman/default/dw105186d8/pdfs/Firmware_Update_PartyBox1000_V63_September2019.zip",
+        "archive_filename": "Firmware_Update_PartyBox1000_V63_September2019.zip",
+        "archive_sha256": "4df385344a549d8af9bfd61939199ba3f1d20427c1b0b8b444ccee411c42e9ff"
+      }
+    },
+    {
+      "path": "manuals/partybox-1000-v64-update-instructions.pdf",
+      "size": 128163,
+      "sha256": "3793d4c0e36a8797eaa0eea68bf79fcfaaa41d003bfd0f6cc43f47aeb9ab2ddc",
+      "model": "JBL PartyBox 1000",
+      "version": "V64",
+      "type": "manual",
+      "source_filename": "Software upgrade V64.pdf",
+      "source": {
+        "kind": "user-supplied",
+        "archive_filename": "jbl.zip",
+        "archive_sha256": "6c903c8b419cc3696bb04e7ca57733272bb4d7bd257c4226fdc914a86ac7f0bf",
+        "nested_archive_filename": "Software+upgrade+V64.zip",
+        "nested_archive_sha256": "7960ca409c110cada67aab02660720fb8128d2d89decb4c6d2a88e5f128784cd",
+        "associated_thread_url": "https://www.reddit.com/r/JBL/comments/17hz0cd/jbl_partybox_1000_broken/k7ec732/",
+        "note": "Archive bytes verified locally; identity with the current file linked by the thread was not independently established."
+      }
+    },
+    {
+      "path": "manuals/partybox-1000-service-v1.2.pdf",
+      "size": 10789900,
+      "sha256": "19b64fa79ec8b159040cd9889c0c600c10c8d67e344ec7d1abb785e5cb3b5ab4",
+      "model": "JBL PartyBox 1000",
+      "version": "1.2 (December 2021)",
+      "type": "manual",
+      "source_filename": "partybox1000-service-v1.2.pdf",
+      "source": {
+        "kind": "manufacturer-hosted-document",
+        "url": "https://harman-cdn.servify.tech/vendor-partner-docs/Partner-Brand_Collateral_19_2022-07-02.JBL%C2%A0PartyBox%C2%A01000%C2%A0-%C2%A0Service%C2%A0Manual%C2%A0v1.2.pdf"
+      }
+    },
+    {
+      "path": "manuals/partybox-1000-update-and-commands-bulletin.pdf",
+      "size": 252305,
+      "sha256": "059bad8ab9afdcad352231e29efdbe6920b095c3eb7aa6f0d87d765597cf434c",
+      "model": "JBL PartyBox 1000",
+      "version": "Rev. 01",
+      "type": "manual",
+      "source_filename": "DocumentoTecnicoArquivoView.pdf",
+      "source": {
+        "kind": "user-supplied"
+      }
+    },
+    {
+      "path": "manuals/partybox-1000-g1-g2-parts-bulletin.pdf",
+      "size": 152980,
+      "sha256": "47396425a3026a0530b30f8b5fc9ddfb3e52e2b1730ca862ef6706f9e52d0752",
+      "model": "JBL PartyBox 1000",
+      "version": null,
+      "type": "manual",
+      "source_filename": "Informativo Te\u0301cnico - Partybox 1000 - Pec\u0327as de reposic\u0327a\u0303o G1 e G2.pdf",
+      "source": {
+        "kind": "user-supplied"
+      }
+    }
+  ]
+}

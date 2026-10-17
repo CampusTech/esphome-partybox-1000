@@ -1,0 +1,149 @@
+#!/usr/bin/env python3
+"""Validate/generate public examples in isolation; optionally compile and verify ELF.
+
+Only public source and deterministic test credentials enter the temporary project.
+No device upload or discovery command is invoked.
+"""
+
+import argparse
+import importlib.metadata
+import shutil
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+
+from verify_build import verify_build
+
+ROOT = Path(__file__).resolve().parents[1]
+TEST_SECRETS = """# Public test values, never deployment credentials.
+wifi_ssid: PartyBox-CI
+wifi_password: public-test-password
+setup_password: public-setup-password
+api_key: AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=
+speaker_mac: '02:00:00:00:00:01'
+"""
+
+
+def esphome(config, *arguments, success=True, expected_error=None):
+    if not success and not expected_error:
+        raise ValueError("Negative configuration checks require an expected diagnostic")
+    result = subprocess.run(
+        [sys.executable, "-m", "esphome", *arguments, str(config)],
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    if success and result.returncode:
+        raise RuntimeError(result.stdout)
+    if not success and not result.returncode:
+        raise RuntimeError(f"Unsupported configuration was accepted: {config.name}")
+    if not success and expected_error not in result.stdout:
+        raise RuntimeError(
+            f"{config.name} failed without expected diagnostic {expected_error!r}:\n{result.stdout}"
+        )
+    return result.stdout
+
+
+def prepare(workspace):
+    for name in ("components", "examples"):
+        shutil.copytree(
+            ROOT / name,
+            workspace / name,
+            dirs_exist_ok=True,
+            ignore=shutil.ignore_patterns(".esphome", "__pycache__", "secrets.yaml"),
+        )
+    (workspace / "examples/secrets.yaml").write_text(TEST_SECRETS)
+
+
+def run_checks(workspace, examples, flash, compile_target=False, negative=True):
+    prepare(workspace)
+    for example in examples:
+        config = (
+            workspace
+            / "examples"
+            / ("minimal.yaml" if example == "minimal" else "partybox-1000.yaml")
+        )
+        text = config.read_text()
+        if "flash_size: 4MB" not in text:
+            raise ValueError(f"Expected 4MB default in {config.name}")
+        config.write_text(text.replace("flash_size: 4MB", f"flash_size: {flash}"))
+        esphome(config, "config")
+        esphome(config, "compile", "--only-generate")
+        sources = list((workspace / "examples/.esphome/build").glob("*/src/main.cpp"))
+        matching = [
+            source for source in sources if "set_peer_address" in source.read_text()
+        ]
+        if not matching:
+            raise ValueError("Generated PartyBox C++ was not found")
+        source = max(matching, key=lambda item: item.stat().st_mtime_ns)
+        generated = source.read_text()
+        if "set_post_connect_roaming(false)" not in generated:
+            raise ValueError("Generated Wi-Fi configuration must disable roaming")
+        if "set_spp_enabled(true)" not in generated:
+            raise ValueError("SPP must be enabled by default")
+        if compile_target:
+            print(f"Compiling {example} ({flash})", flush=True)
+            print(esphome(config, "compile"), end="")
+            build = source.parents[1] / "build"
+            report = verify_build(build)
+            print(
+                f"PASS: {example} {flash}: {report['sdk']}, all {len(report['hooks'])} linked hooks"
+            )
+        if negative:
+            for label, old, new, diagnostic in [
+                (
+                    "wrong-sdk",
+                    "version: 5.5.5",
+                    "version: 5.5.4",
+                    "partybox requires the ESP-IDF framework at version 5.5.5",
+                ),
+                (
+                    "wrong-chip",
+                    "board: esp32dev",
+                    "board: esp32-s3-devkitc-1",
+                    "This feature is only available on ESP32",
+                ),
+            ]:
+                if old not in config.read_text():
+                    raise ValueError(f"Cannot construct {label} rejection case")
+                rejected = config.with_name(label + ".yaml")
+                rejected.write_text(config.read_text().replace(old, new))
+                esphome(rejected, "config", success=False, expected_error=diagnostic)
+        print(
+            f"PASS: {example} {flash} schema, generated roaming/SPP settings and unsupported targets",
+            flush=True,
+        )
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--example", choices=["all", "full", "minimal"], default="all")
+    parser.add_argument("--flash", choices=["4MB", "8MB"], default="4MB")
+    parser.add_argument(
+        "--compile",
+        action="store_true",
+        help="Compile locally and verify linked ELF; never upload",
+    )
+    parser.add_argument(
+        "--work-dir",
+        type=Path,
+        help="Preserve isolated generated project here (must not exist)",
+    )
+    args = parser.parse_args()
+    if importlib.metadata.version("esphome") != "2026.9.1":
+        parser.error("Install the pinned requirements.txt (ESPHome 2026.9.1)")
+    examples = ["full", "minimal"] if args.example == "all" else [args.example]
+    try:
+        if args.work_dir:
+            args.work_dir.mkdir(parents=True, exist_ok=False)
+            run_checks(args.work_dir.resolve(), examples, args.flash, args.compile)
+        else:
+            with tempfile.TemporaryDirectory(prefix="partybox-ci-") as folder:
+                run_checks(Path(folder), examples, args.flash, args.compile)
+    except (OSError, ValueError, RuntimeError, subprocess.SubprocessError) as error:
+        parser.exit(1, f"Configuration check failed: {error}\n")
+
+
+if __name__ == "__main__":
+    main()
