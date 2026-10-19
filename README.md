@@ -34,6 +34,9 @@ make individual controls unavailable while its API remains connected, or clear
 the player's individual volume/mute fields. Inspect confidence entities when
 those retained values matter. See [protocol and state semantics](docs/protocol.md).
 
+For source selection and bass sound modes inside a single HA media player, use
+the optional [Home Assistant wrapper](docs/home-assistant.md).
+
 ## Optional RGB status LED
 
 The supplied SDATEKIT ESP32-WROOM-32E schematic connects a WS2812B to

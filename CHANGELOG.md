@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Home Assistant Universal Media Player example combining the native player with input selection and bass sound modes.
+
 - Optional RGB health indicator with connection status, local command-write pulses and failure flashes.
 - RGB-enabled target compilation and runtime tests for optional light support and startup failures.
 

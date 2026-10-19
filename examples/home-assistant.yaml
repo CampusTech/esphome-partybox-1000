@@ -1,0 +1,30 @@
+# Home Assistant configuration, NOT an ESPHome device YAML.
+# Replace every partybox_1000 entity ID with your actual ESPHome entity IDs.
+media_player:
+  - platform: universal
+    name: PartyBox 1000
+    unique_id: partybox_1000_combined
+    device_class: speaker
+    children:
+      - media_player.partybox_1000_player
+    # Keep the one child selected in standby too, preserving volume/power features.
+    active_child_template: media_player.partybox_1000_player
+    state_template: "{{ states('media_player.partybox_1000_player') }}"
+    commands:
+      select_source:
+        action: select.select_option
+        target:
+          entity_id: select.partybox_1000_source
+        data:
+          option: "{{ source }}"
+      select_sound_mode:
+        action: select.select_option
+        target:
+          entity_id: select.partybox_1000_bass_boost
+        data:
+          option: "{{ sound_mode }}"
+    attributes:
+      source: select.partybox_1000_source
+      source_list: select.partybox_1000_source|options
+      sound_mode: select.partybox_1000_bass_boost
+      sound_mode_list: select.partybox_1000_bass_boost|options
