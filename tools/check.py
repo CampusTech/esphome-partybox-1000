@@ -132,6 +132,25 @@ def main():
                 check=True,
             )
             subprocess.run([str(indicator)], check=True)
+        for name in ("target", "pairing"):
+            with tempfile.TemporaryDirectory(prefix="partybox-target-") as folder:
+                binary = Path(folder) / name
+                subprocess.run(
+                    [
+                        compiler,
+                        "-std=c++17",
+                        "-Wall",
+                        "-Wextra",
+                        "-Werror",
+                        "-I",
+                        str(ROOT / "components/partybox"),
+                        str(ROOT / f"tests/partybox/{name}_test.cpp"),
+                        "-o",
+                        str(binary),
+                    ],
+                    check=True,
+                )
+                subprocess.run([str(binary)], check=True)
         for name in ("test_hook.py", "test_runtime.py"):
             subprocess.run(
                 [sys.executable, str(ROOT / "tests/partybox" / name)], check=True

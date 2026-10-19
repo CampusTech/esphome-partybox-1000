@@ -13,6 +13,7 @@
 #include "esp_idf_version.h"
 #include "esp_spp_api.h"
 #include "esp_system.h"
+#include "esphome/core/application.h"
 #include "esphome/core/controller_registry.h"
 #include "esphome/core/hal.h"
 #include "esphome/core/log.h"
@@ -45,6 +46,29 @@ static void radio_readback() {
   }
 }
 static void gap_callback(esp_bt_gap_cb_event_t event, esp_bt_gap_cb_param_t* p) {
+  if (!p || !active_partybox) return;
+  if (active_partybox->pairing_active() && event == ESP_BT_GAP_DISC_RES_EVT) {
+    uint32_t cod = 0;
+    const uint8_t* eir = nullptr;
+    size_t length = 0;
+    for (int i = 0; i < p->disc_res.num_prop; i++) {
+      const auto& property = p->disc_res.prop[i];
+      if (property.type == ESP_BT_GAP_DEV_PROP_COD && property.val && property.len == 4)
+        std::memcpy(&cod, property.val, 4);
+      if (property.type == ESP_BT_GAP_DEV_PROP_EIR && property.val && property.len > 0) {
+        eir = static_cast<const uint8_t*>(property.val);
+        length = property.len;
+      }
+    }
+    if (is_pairing_candidate(cod, eir, length)) {
+      Event e;
+      e.type = 20;
+      std::memcpy(e.bytes, p->disc_res.bda, 6);
+      active_partybox->post(e);
+    }
+  }
+  if (event == ESP_BT_GAP_DISC_STATE_CHANGED_EVT)
+    active_partybox->discovery_state(p->disc_st_chg.state == ESP_BT_GAP_DISCOVERY_STARTED);
   if (event == ESP_BT_GAP_CFM_REQ_EVT)
     esp_bt_gap_ssp_confirm_reply(p->cfm_req.bda, active_partybox->peer_matches(p->cfm_req.bda));
   if (event == ESP_BT_GAP_PIN_REQ_EVT) {
@@ -117,6 +141,10 @@ static void audio_callback(esp_a2d_cb_event_t event, esp_a2d_cb_param_t* p) {
     const int reason = p->conn_stat.state == ESP_A2D_CONNECTION_STATE_DISCONNECTED ? p->conn_stat.disc_rsn : -1;
     ESP_LOGI(TAG, "A2DP state=%u disconnect_reason=%d selected_peer=%u", p->conn_stat.state, reason, selected);
     if (selected) {
+      if (!active_partybox->audio_link(p->conn_stat.state != ESP_A2D_CONNECTION_STATE_DISCONNECTED)) {
+        esp_a2d_sink_disconnect(p->conn_stat.remote_bda);
+        return;
+      }
       Event e;
       e.type = 9;
       e.value = p->conn_stat.state;
@@ -172,7 +200,123 @@ static void spp_callback(esp_spp_cb_event_t event, esp_spp_cb_param_t* p) {
   }
 }
 bool PartyBox::peer_matches(const uint8_t* p) const {
-  return p && !std::memcmp(peer_, p, 6);
+  return p && !target_restart_pending_.load() && !pairing_.load() &&
+         (peer_[0] || peer_[1] || peer_[2] || peer_[3] || peer_[4] || peer_[5]) && !std::memcmp(peer_, p, 6);
+}
+static constexpr uint32_t TARGET_PREFERENCE_KEY = 0x50425801;
+void PartyBox::load_target_() {
+  auto preference = global_preferences->make_preference<SavedPeer>(TARGET_PREFERENCE_KEY);
+  SavedPeer saved{};
+  if (preference.load(&saved) && saved.version == 1) {
+    PeerAddress checked{};
+    if (parse_address(format_address(saved.address), checked)) std::memcpy(peer_, checked.bytes, 6);
+  }
+  PeerAddress current{};
+  std::memcpy(current.bytes, peer_, 6);
+  if (target_text_) target_text_->publish_state(format_address(current));
+  publish_candidates_();
+}
+bool PartyBox::configure_target(const std::string& value) {
+  if (target_restart_pending_.load() || pairing_.load()) {
+    result_("refused: pairing or target restart in progress", true);
+    return false;
+  }
+  PeerAddress next{}, current{};
+  std::memcpy(current.bytes, peer_, 6);
+  if (!parse_address(value, next)) {
+    result_("invalid speaker Bluetooth address", true);
+    return false;
+  }
+  if (!std::memcmp(next.bytes, current.bytes, 6)) {
+    if (target_text_) target_text_->publish_state(format_address(current));
+    return false;
+  }
+  auto preference = global_preferences->make_preference<SavedPeer>(TARGET_PREFERENCE_KEY);
+  SavedPeer saved{};
+  saved.address = next;
+  if (!preference.save(&saved) || !global_preferences->sync()) {
+    SavedPeer rollback{};
+    rollback.address = current;
+    preference.save(&rollback);
+    global_preferences->sync();
+    result_("target save failed: current target retained", true);
+    return false;
+  }
+  target_restart_pending_ = true;
+  lost_();
+  if (target_text_) target_text_->publish_state(format_address(next));
+  result_("speaker target saved: restarting bridge");
+  publish_();
+  // The text component remains scheduled even if Bluetooth setup failed.
+  if (target_text_)
+    target_text_->schedule_restart();
+  else
+    set_timeout("speaker-target-restart", 300, []() { App.safe_reboot(); });
+  return true;
+}
+void TargetAddress::schedule_restart() {
+  set_timeout("speaker-target-restart", 300, []() { App.safe_reboot(); });
+}
+void TargetAddress::control(const std::string& value) {
+  parent_->configure_target(value);
+}
+void PairingChoice::control(const std::string& value) {
+  parent_->choose_candidate(value);
+}
+void PartyBox::publish_candidates_() {
+  std::string result;
+  for (size_t i = 0; i < candidates_.size(); i++) {
+    if (i) result += "; ";
+    result += "Candidate " + std::to_string(i + 1) + ": " + format_address(candidates_[i]);
+  }
+  if (pairing_results_) pairing_results_->publish_state(result.empty() ? "None" : result);
+  if (pairing_choice_) pairing_choice_->publish_state("None");
+}
+void PartyBox::choose_candidate(const std::string& value) {
+  if (pairing_.load() || pairing_failed_ || candidates_.overflowed()) {
+    result_("refused: discovery incomplete", true);
+    return;
+  }
+  for (size_t i = 0; i < candidates_.size(); i++) {
+    if (value == "Candidate " + std::to_string(i + 1)) {
+      if (configure_target(format_address(candidates_[i])) && pairing_choice_) pairing_choice_->publish_state(value);
+      return;
+    }
+  }
+  if (value != "None") result_("refused: speaker not in completed discovery", true);
+}
+bool PartyBox::audio_link(bool linked) {
+  portENTER_CRITICAL(&transport_mux_);
+  const bool accepted = !linked || !pairing_.load();
+  if (accepted) a2dp_linked_ = linked;
+  portEXIT_CRITICAL(&transport_mux_);
+  return accepted;
+}
+void PartyBox::discovery_state(bool started) {
+  if (!pairing_.load()) return;
+  uint8_t expected = started ? 1 : 2;
+  discovery_state_.compare_exchange_strong(expected, started ? 2 : 3);
+}
+void PartyBox::finish_pairing_() {
+  pairing_ = false;
+  pairing_finished_at_ = millis();
+  pairing_has_finished_ = true;
+  publish_candidates_();
+  if (pairing_failed_ || candidates_.overflowed()) {
+    result_("pairing incomplete: retry with one speaker searching", true);
+  } else if (const auto* candidate = candidates_.single()) {
+    const std::string address = format_address(*candidate);
+    PeerAddress current{};
+    std::memcpy(current.bytes, peer_, 6);
+    if (address == format_address(current))
+      result_("speaker already selected: start its TWS search");
+    else
+      configure_target(address);
+  } else if (candidates_.size()) {
+    result_("multiple speakers found: choose Pairing candidate");
+  } else {
+    result_("no matching speaker found: start JBL TWS search and retry", true);
+  }
 }
 void PartyBox::post(const Event& event) {
   if (!events_ || xQueueSend(events_, &event, 0) != pdTRUE) {
@@ -190,6 +334,7 @@ void PartyBox::native_event(const Event& e) {
   // Lifecycle mailboxes cannot be lost when the bounded data-event queue fills.
   portENTER_CRITICAL(&transport_mux_);
   if (e.type == 1) {
+    if (pairing_.load()) pairing_crossed_link_ = true;
     native_rc_session_ = e.session;
     native_rc_handle_ = e.handle;
     native_rc_active_ = true;
@@ -200,14 +345,14 @@ void PartyBox::native_event(const Event& e) {
 }
 uint32_t PartyBox::spp_open(uint32_t handle) {
   portENTER_CRITICAL(&transport_mux_);
-  const bool conflict = native_spp_handle_ != 0;
+  const bool conflict = native_spp_handle_ != 0 || pairing_.load();
   if (!conflict) {
     native_spp_handle_ = handle;
     ++native_spp_epoch_;
   }
   const uint32_t epoch = native_spp_epoch_;
   portEXIT_CRITICAL(&transport_mux_);
-  if (conflict && handle && handle != native_spp_handle_) esp_spp_disconnect(handle);
+  if (conflict && handle && (pairing_.load() || handle != native_spp_handle_)) esp_spp_disconnect(handle);
   return epoch;
 }
 void PartyBox::spp_close(uint32_t handle) {
@@ -248,6 +393,7 @@ void PartyBox::setup() {
     return;
   }
   active_partybox = this;
+  load_target_();
   events_ = xQueueCreate(32, sizeof(Event));
   if (!events_) {
     mark_failed();
@@ -294,7 +440,7 @@ void PartyBox::result_(const char* s, bool error) {
   ESP_LOGI(TAG, "Command: %s", s);
 }
 bool PartyBox::eligible_(Field f, int v) const {
-  if (!valid_command({f, v}) || !tws_) return false;
+  if (target_restart_pending_.load() || pairing_.load() || !valid_command({f, v}) || !tws_) return false;
   if (f == Field::SOURCE || f == Field::VERSION) return spp_enabled_ && spp_handle_ && !spp_poisoned_;
   if (f == Field::LIGHTING && state_.lighting_flag.quality == Quality::UNKNOWN) return false;
   if (f == Field::POWER) return state_.power.quality != Quality::UNKNOWN && state_.power.value != bool(v);
@@ -318,6 +464,54 @@ bool PartyBox::request(Field f, int value) {
   return true;
 }
 void PartyBox::action(uint8_t role) {
+  if (target_restart_pending_.load()) {
+    result_("refused: target restart pending", true);
+    return;
+  }
+  if (role == 5) {
+    if (pairing_.load()) {
+      result_("refused: discovery in progress", true);
+      return;
+    }
+    recover_();
+    result_("Bluetooth disconnect requested; wait for link to close");
+    return;
+  }
+  if (role == 4) {
+    if ((pairing_has_finished_ && uint32_t(millis() - pairing_finished_at_) < 2000) || is_failed() || !identity_ ||
+        tws_ || connect_pending_ || spp_connecting_ || pairing_.load()) {
+      result_("refused: disconnect Bluetooth before pairing", true);
+      return;
+    }
+    // Close the admission gate before inspecting native link mailboxes.
+    portENTER_CRITICAL(&transport_mux_);
+    pairing_crossed_link_ = false;
+    pairing_ = true;
+    const bool linked = native_rc_active_ || native_spp_handle_ != 0 || a2dp_linked_.load();
+    if (linked) pairing_ = false;
+    portEXIT_CRITICAL(&transport_mux_);
+    if (linked) {
+      result_("refused: disconnect Bluetooth before pairing", true);
+      return;
+    }
+    candidates_.clear();
+    publish_candidates_();
+    pairing_failed_ = false;
+    pairing_cancel_requested_ = false;
+    pairing_at_ = millis();
+    discovery_state_ = 1;
+    if (esp_bt_gap_start_discovery(ESP_BT_INQ_MODE_LIMITED_INQUIRY, 8, 0) != ESP_OK) {
+      pairing_ = false;
+      result_("pairing discovery failed", true);
+      return;
+    }
+    result_("searching for PartyBox 1000 in TWS pairing mode");
+    return;
+  }
+  if (pairing_.load()) {
+    result_("refused: discovery in progress", true);
+    return;
+  }
   if (role == 1) {
     request(Field::POWER, 0);
     return;
@@ -331,7 +525,8 @@ void PartyBox::action(uint8_t role) {
     return;
   }
   if (identity_) radio_readback();
-  if (is_failed() || !a2dp_ready_ || tws_ || connect_pending_) {
+  if (is_failed() || !a2dp_ready_ || tws_ || connect_pending_ ||
+      !(peer_[0] || peer_[1] || peer_[2] || peer_[3] || peer_[4] || peer_[5])) {
     result_("refused: connect not ready or already linked", true);
     return;
   }
@@ -371,7 +566,8 @@ void PartyBox::recover_() {
   portEXIT_CRITICAL(&transport_mux_);
   fence_active_ = true;
   lost_();
-  if (active && !partybox_queue_close(fenced_session_, handle)) result_("recovery close failed: reboot controller", true);
+  if (active && !partybox_queue_close(fenced_session_, handle))
+    result_("recovery close failed: reboot controller", true);
   esp_a2d_sink_disconnect(peer_);
 }
 void PartyBox::finish_(bool accepted) {
@@ -385,6 +581,15 @@ void PartyBox::finish_(bool accepted) {
 }
 void PartyBox::event_(const Event& e) {
   const uint32_t now = millis();
+  if (target_restart_pending_.load()) return;
+  if (e.type == 20) {
+    if (!pairing_.load()) return;
+    PeerAddress address{};
+    std::memcpy(address.bytes, e.bytes, 6);
+    candidates_.add(address);
+    return;
+  }
+  if (pairing_.load()) return;
   if (e.type == 1) {
     if (fence_active_ && e.session == fenced_session_) return;
     fence_active_ = false;
@@ -487,8 +692,7 @@ void PartyBox::event_(const Event& e) {
                                                             : "connect failed: A2DP disconnected before TWS");
     connect_pending_ = false;
   } else if (e.type == 10) {
-    if (e.value == 0 && tws_ && e.session == session_ && e.handle == rc_handle_)
-      indicator_.transmitted(now);
+    if (e.value == 0 && tws_ && e.session == session_ && e.handle == rc_handle_) indicator_.transmitted(now);
     const bool matching = tws_ && e.session == session_ && e.handle == rc_handle_ && scheduler_.pending() &&
                           !pending_spp_ && e.label == pending_label_;
     ESP_LOGI(TAG, "Native TX session=%lu handle=%u label=%u status=%lu matching=%u", (unsigned long)e.session, e.handle,
@@ -587,8 +791,20 @@ void PartyBox::send_next_() {
 }
 void PartyBox::loop() {
   update_indicator_();
-  if (is_failed()) return;
+  if (is_failed() || target_restart_pending_.load()) return;
   const uint32_t now = millis();
+  if (pairing_.load() && discovery_state_.load() != 3 && !pairing_cancel_requested_ &&
+      (pairing_crossed_link_.load() || uint32_t(now - pairing_at_) >= 30000)) {
+    pairing_cancel_requested_ = true;
+    pairing_failed_ = true;
+    if (esp_bt_gap_cancel_discovery() != ESP_OK) {
+      result_("discovery cancellation failed: restart bridge required", true);
+      mark_failed();
+      update_indicator_();
+      return;
+    }
+    // Stay fenced until the stack confirms inquiry/name discovery stopped.
+  }
   if (!identity_ && a2dp_ready_ && spp_ready_) {
     esp_bt_cod_t cod{};
     cod.minor = 0x0A;
@@ -610,7 +826,11 @@ void PartyBox::loop() {
     ESP_LOGI(TAG, "Ready for selected speaker's TWS search");
     set_timeout("controller-readback", 1000, radio_readback);
   }
+  // STOP is release/acquire ordered after all discovery results. Observe it
+  // before the final drain, never after an empty-queue check.
+  const bool pairing_complete = pairing_.load() && discovery_state_.load() == 3;
   if (overflow_.exchange(false)) {
+    if (pairing_.load()) pairing_failed_ = true;
     xQueueReset(events_);
     recover_();
     result_("event overflow: reconnect required", true);
@@ -621,6 +841,15 @@ void PartyBox::loop() {
   while (processed++ < 32 && xQueueReceive(events_, &e, 0) == pdTRUE) event_(e);
   processed = 0;
   while (diagnostics_ && processed++ < 8 && xQueueReceive(diagnostics_, &e, 0) == pdTRUE) event_(e);
+  if (pairing_complete) {
+    if (pairing_crossed_link_.load()) pairing_failed_ = true;
+    finish_pairing_();
+    if (pairing_crossed_link_.exchange(false)) recover_();
+  }
+  if (target_restart_pending_.load()) {
+    publish_();
+    return;
+  }
   rssi_active_ = tws_;
   if (rssi_requests_ && tws_ && uint32_t(now - last_rssi_read_) >= 15000) {
     last_rssi_read_ = now;
@@ -675,8 +904,8 @@ void PartyBox::update_indicator_() {
   network_ready = wifi::global_wifi_component && wifi::global_wifi_component->is_connected();
 #endif
 #ifdef USE_API
-  network_ready = network_ready && api::global_api_server &&
-                  api::global_api_server->is_connected_with_state_subscription();
+  network_ready =
+      network_ready && api::global_api_server && api::global_api_server->is_connected_with_state_subscription();
 #endif
   const bool speaker_ready = tws_ && (!spp_enabled_ || (spp_handle_ && !spp_poisoned_));
   const auto color = indicator_.color(millis(), network_ready, speaker_ready, is_failed());
@@ -690,8 +919,7 @@ void PartyBox::update_indicator_() {
   call.set_state(color != IndicatorColor::OFF)
       .set_transition_length(0)
       .set_brightness(status_brightness_)
-      .set_rgb(red ? 1.0f : 0.0f, green ? (color == IndicatorColor::AMBER ? 0.3f : 1.0f) : 0.0f,
-               blue ? 1.0f : 0.0f)
+      .set_rgb(red ? 1.0f : 0.0f, green ? (color == IndicatorColor::AMBER ? 0.3f : 1.0f) : 0.0f, blue ? 1.0f : 0.0f)
       .set_publish(false)
       .set_save(false)
       .perform();

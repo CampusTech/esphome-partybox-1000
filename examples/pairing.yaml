@@ -1,0 +1,28 @@
+# For a checkout. See README.md for the versioned GitHub package import.
+substitutions:
+  name: partybox-1000
+  friendly_name: PartyBox 1000
+  partybox_flash_size: 4MB  # Use 8MB only for boards with 8MB flash.
+  partybox_component_source: ../components
+
+packages:
+  partybox: !include ../packages/partybox-1000.yaml
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  ap:
+    password: !secret setup_password
+
+api:
+  encryption:
+    key: !secret api_key
+
+ota:
+  - platform: esphome
+    encryption:
+      key: !secret api_key
+
+partybox:
+  id: jbl
+  # Choose the speaker using Pair speaker in Home Assistant.

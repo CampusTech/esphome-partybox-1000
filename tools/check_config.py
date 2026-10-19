@@ -33,6 +33,7 @@ def esphome(config, *arguments, success=True, expected_error=None, stream=False)
     result = subprocess.run(
         [sys.executable, "-m", "esphome", *arguments, str(config)],
         text=True,
+        check=False,
         stdout=None if stream else subprocess.PIPE,
         stderr=subprocess.STDOUT,
     )
@@ -159,6 +160,7 @@ def run_checks(workspace, examples, flash, compile_target=False, negative=True):
     spec.loader.exec_module(module)
     cases = {
         "disabled": "".join(f"  {key}: false\n" for key in module.DEFAULT_NAMES),
+        "unconfigured": "",
         "overrides": (
             "  media_player:\n    name: Office player\n"
             "  bass:\n    icon: mdi:music\n"
@@ -169,7 +171,14 @@ def run_checks(workspace, examples, flash, compile_target=False, negative=True):
     for label, options in cases.items():
         config = workspace / "examples" / f"entities-{label}.yaml"
         config.write_text(
-            base + "\npartybox:\n  mac_address: !secret speaker_mac\n" + options
+            base
+            + "\npartybox:\n"
+            + (
+                "  id: jbl\n"
+                if label == "unconfigured"
+                else "  mac_address: !secret speaker_mac\n"
+            )
+            + options
         )
         esphome(config, "compile", "--only-generate")
         source = workspace / "examples/.esphome/build/partybox-1000/src/main.cpp"
@@ -177,14 +186,39 @@ def run_checks(workspace, examples, flash, compile_target=False, negative=True):
         if label == "disabled":
             if any(
                 f"partybox::{kind}(" in generated
-                for kind in ("Player", "Choice", "Action")
+                for kind in (
+                    "Player",
+                    "Choice",
+                    "Action",
+                    "TargetAddress",
+                    "PairingChoice",
+                )
             ):
                 raise ValueError("Disabled entity objects were generated")
             if any(
                 f"->set_{kind}(" in generated
-                for kind in ("player", "choice", "sensor", "binary", "text")
+                for kind in (
+                    "player",
+                    "choice",
+                    "sensor",
+                    "binary",
+                    "text",
+                    "target_text",
+                    "pairing_choice",
+                    "pairing_results",
+                )
             ):
                 raise ValueError("Disabled entities were attached to the controller")
+        elif label == "unconfigured":
+            if "->set_peer_address(" in generated:
+                raise ValueError("Unconfigured bridge received a seed target")
+            for entity in (
+                "Pair speaker",
+                "Speaker Bluetooth address",
+                "Pairing candidate",
+            ):
+                if f'"{entity}"' not in generated:
+                    raise ValueError(f"Missing pairing entity: {entity}")
         else:
             if generated_entity_flags(generated, "Free heap") & (1 << 25):
                 raise ValueError("User diagnostic visibility override was ignored")

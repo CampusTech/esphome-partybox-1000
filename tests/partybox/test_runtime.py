@@ -14,7 +14,7 @@ with tempfile.TemporaryDirectory(prefix="partybox-runtime-") as folder:
         root / "components/partybox/partybox.cpp",
     ]:
         for include in re.findall(r'#include "([^"]+)"', source.read_text()):
-            if include in ["core.h", "partybox.h", "indicator.h"]:
+            if include in ["core.h", "partybox.h", "indicator.h", "target.h"]:
                 continue
             stub = tmp / include
             stub.parent.mkdir(parents=True, exist_ok=True)
@@ -73,6 +73,11 @@ class LightState { public: int calls{0}; LightCall make_call() { ++calls; return
             subprocess.run([str(exe), "indicator_setup_failure"], check=True)
     failures = []
     for case in [
+        "target_restore",
+        "pairing_window",
+        "pairing_ambiguity",
+        "pairing_lifecycle",
+        "target_restart_owner",
         "indicator_activity",
         "indicator_spp_activity",
         "source",

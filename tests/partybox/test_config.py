@@ -25,7 +25,7 @@ class EntityConfigTests(unittest.TestCase):
     def test_mac_only_enables_public_entities_with_existing_names(self):
         config = self.validate()
         entities = [value for value in config.values() if isinstance(value, dict)]
-        self.assertEqual(len(entities), 33)
+        self.assertEqual(len(entities), 38)
         self.assertTrue(all("name" in entity for entity in entities))
         self.assertTrue(all(not entity.get("internal", False) for entity in entities))
         for key, name in {
@@ -50,6 +50,14 @@ class EntityConfigTests(unittest.TestCase):
                 self.assertIn(key, config)
                 self.assertEqual(config[key]["name"], name)
                 self.assertFalse(config[key].get("internal", False))
+
+    def test_unconfigured_bridge_has_pairing_and_address_controls(self):
+        config = CONFIG_SCHEMA({})
+        self.assertNotIn("mac_address", config)
+        self.assertEqual(config["pair"]["name"], "Pair speaker")
+        self.assertEqual(config["speaker_address"]["name"], "Speaker Bluetooth address")
+        self.assertEqual(config["speaker_address"]["mode"], "TEXT")
+        self.assertEqual(config["speaker_address"]["entity_category"], "config")
 
     def test_names_and_other_entity_options_override_defaults(self):
         config = self.validate(

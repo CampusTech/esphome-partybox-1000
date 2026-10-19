@@ -2,14 +2,17 @@
 #include <atomic>
 
 #include "core.h"
-#include "indicator.h"
 #include "esphome/components/binary_sensor/binary_sensor.h"
 #include "esphome/components/button/button.h"
 #include "esphome/components/media_player/media_player.h"
 #include "esphome/components/select/select.h"
 #include "esphome/components/sensor/sensor.h"
+#include "esphome/components/text/text.h"
 #include "esphome/components/text_sensor/text_sensor.h"
 #include "esphome/core/component.h"
+#include "esphome/core/preferences.h"
+#include "indicator.h"
+#include "target.h"
 #ifdef USE_LIGHT
 #include "esphome/components/light/light_state.h"
 #endif
@@ -18,6 +21,23 @@
 
 namespace esphome::partybox {
 class PartyBox;
+class TargetAddress : public text::Text, public Component {
+ public:
+  explicit TargetAddress(PartyBox* parent) : parent_(parent) {}
+  void schedule_restart();
+
+ protected:
+  void control(const std::string& value) override;
+  PartyBox* parent_;
+};
+class PairingChoice : public select::Select {
+ public:
+  explicit PairingChoice(PartyBox* parent) : parent_(parent) {}
+
+ protected:
+  void control(const std::string& value) override;
+  PartyBox* parent_;
+};
 class Player : public media_player::MediaPlayer {
  public:
   explicit Player(PartyBox* parent) : parent_(parent) {
@@ -57,6 +77,22 @@ struct Event {
 };
 class PartyBox : public Component {
  public:
+  bool configure_target(const std::string& value);
+  void choose_candidate(const std::string& value);
+  bool pairing_active() const {
+    return pairing_.load();
+  }
+  void discovery_state(bool started);
+  bool audio_link(bool linked);
+  void set_target_text(TargetAddress* value) {
+    target_text_ = value;
+  }
+  void set_pairing_results(text_sensor::TextSensor* value) {
+    pairing_results_ = value;
+  }
+  void set_pairing_choice(PairingChoice* value) {
+    pairing_choice_ = value;
+  }
   void setup() override;
   void loop() override;
   void dump_config() override;
@@ -106,6 +142,9 @@ class PartyBox : public Component {
   }
 
  protected:
+  void load_target_();
+  void publish_candidates_();
+  void finish_pairing_();
   void publish_();
   void event_(const Event& event);
   void send_next_();
@@ -118,6 +157,17 @@ class PartyBox : public Component {
   static void rssi_worker_(void* context);
   bool eligible_(Field field, int value) const;
   uint8_t peer_[6]{};
+  TargetAddress* target_text_{nullptr};
+  PairingChoice* pairing_choice_{nullptr};
+  text_sensor::TextSensor* pairing_results_{nullptr};
+  std::atomic<bool> target_restart_pending_{false}, pairing_{false};
+  PairingCandidates candidates_{};
+  uint32_t pairing_at_{0}, pairing_finished_at_{0};
+  bool pairing_has_finished_{false};
+  std::atomic<uint8_t> discovery_state_{0};
+  std::atomic<bool> pairing_crossed_link_{false};
+  bool pairing_failed_{false}, pairing_cancel_requested_{false};
+  std::atomic<bool> a2dp_linked_{false};
   QueueHandle_t events_{nullptr};
   QueueHandle_t diagnostics_{nullptr};
   QueueHandle_t rssi_requests_{nullptr};

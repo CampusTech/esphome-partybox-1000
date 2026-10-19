@@ -3,6 +3,11 @@ packages:
   base: !include partybox-1000.yaml
 
 partybox:
+  speaker_address: false
+  pairing_candidate: false
+  pairing_results: false
+  pair: false
+  disconnect: false
   source: false
   bass: false
   lighting: false

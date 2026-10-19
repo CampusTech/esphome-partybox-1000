@@ -37,6 +37,18 @@ those retained values matter. See [protocol and state semantics](docs/protocol.m
 For source selection and bass sound modes inside a single HA media player, use
 the optional [Home Assistant wrapper](docs/home-assistant.md).
 
+## Pairing without a MAC address
+
+The current checkout adds a **Pair speaker** button in HA. Put the intended JBL
+into TWS search, then press it: a single discovery window finds compatible
+PartyBox 1000 candidates and saves the only match. Multiple matches require a
+choice. The saved target can also be edited in HA without reflashing.
+
+Use [examples/pairing.yaml](examples/pairing.yaml) and the
+[pairing guide](docs/pairing.md). This feature is not yet in the published beta
+tag and still needs live discovery validation. Normal operation keeps active
+scanning disabled. Changing targets restarts the bridge and requires TWS pairing.
+
 ## Optional RGB status LED
 
 The supplied SDATEKIT ESP32-WROOM-32E schematic connects a WS2812B to

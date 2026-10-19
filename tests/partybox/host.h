@@ -142,6 +142,8 @@ struct esp_a2d_audio_buff_t {
 };
 using esp_a2d_conn_hdl_t = int;
 enum esp_bt_gap_cb_event_t {
+  ESP_BT_GAP_DISC_RES_EVT,
+  ESP_BT_GAP_DISC_STATE_CHANGED_EVT,
   ESP_BT_GAP_CFM_REQ_EVT,
   ESP_BT_GAP_PIN_REQ_EVT,
   ESP_BT_GAP_AUTH_CMPL_EVT,
@@ -151,7 +153,31 @@ enum esp_bt_gap_cb_event_t {
   ESP_BT_GAP_MODE_CHG_EVT,
   ESP_BT_GAP_READ_RSSI_DELTA_EVT
 };
+constexpr int ESP_BT_GAP_DEV_PROP_COD = 1, ESP_BT_GAP_DEV_PROP_EIR = 2;
+constexpr int ESP_BT_GAP_DISCOVERY_STARTED = 1, ESP_BT_GAP_DISCOVERY_STOPPED = 0, ESP_BT_INQ_MODE_LIMITED_INQUIRY = 1;
+struct esp_bt_gap_dev_prop_t {
+  int type;
+  int len;
+  void* val;
+};
+inline unsigned host_discoveries = 0;
+inline esp_err_t esp_bt_gap_start_discovery(int mode, int length, int count) {
+  assert(mode == ESP_BT_INQ_MODE_LIMITED_INQUIRY && length == 8 && count == 0);
+  ++host_discoveries;
+  return ESP_OK;
+}
+inline esp_err_t esp_bt_gap_cancel_discovery() {
+  return ESP_OK;
+}
 struct esp_bt_gap_cb_param_t {
+  struct {
+    uint8_t bda[6];
+    int num_prop;
+    esp_bt_gap_dev_prop_t* prop;
+  } disc_res;
+  struct {
+    int state;
+  } disc_st_chg;
   struct {
     uint8_t bda[6];
   } cfm_req;
@@ -294,14 +320,17 @@ struct esp_spp_cb_param_t {
 HOST_OK(esp_bt_gap_ssp_confirm_reply)
 HOST_OK(esp_bt_gap_pin_reply)
 inline esp_err_t host_controller_init_result = ESP_OK;
-inline esp_err_t esp_bt_controller_init(void*) { return host_controller_init_result; }
-HOST_OK(esp_a2d_sink_register_stream_endpoint)  HOST_OK(esp_bt_controller_enable)
-    HOST_OK(esp_bluedroid_init) HOST_OK(esp_bluedroid_enable) HOST_OK(esp_bt_gap_set_device_name)
-        HOST_OK(esp_avrc_ct_init) HOST_OK(esp_avrc_ct_register_callback) HOST_OK(esp_avrc_tg_init)
-            HOST_OK(esp_avrc_tg_register_callback) HOST_OK(esp_a2d_sink_register_audio_data_callback)
-                HOST_OK(esp_a2d_sink_init) HOST_OK(esp_spp_register_callback) HOST_OK(esp_spp_enhanced_init)
-                    HOST_OK(esp_bt_gap_set_security_param) HOST_OK(esp_a2d_sink_connect) HOST_OK(esp_spp_write)
-                        HOST_OK(esp_bt_gap_set_cod) HOST_OK(esp_bt_gap_config_eir_data)
+inline esp_err_t esp_bt_controller_init(void*) {
+  return host_controller_init_result;
+}
+HOST_OK(esp_a2d_sink_register_stream_endpoint)
+HOST_OK(esp_bt_controller_enable) HOST_OK(esp_bluedroid_init) HOST_OK(esp_bluedroid_enable)
+    HOST_OK(esp_bt_gap_set_device_name) HOST_OK(esp_avrc_ct_init) HOST_OK(esp_avrc_ct_register_callback)
+        HOST_OK(esp_avrc_tg_init) HOST_OK(esp_avrc_tg_register_callback)
+            HOST_OK(esp_a2d_sink_register_audio_data_callback) HOST_OK(esp_a2d_sink_init)
+                HOST_OK(esp_spp_register_callback) HOST_OK(esp_spp_enhanced_init) HOST_OK(esp_bt_gap_set_security_param)
+                    HOST_OK(esp_a2d_sink_connect) HOST_OK(esp_spp_write) HOST_OK(esp_bt_gap_set_cod)
+                        HOST_OK(esp_bt_gap_config_eir_data)
                             HOST_OK(esp_bt_gap_set_scan_mode) inline int esp_spp_connect(int, int, int, uint8_t*) {
   ++host_spp_connects;
   return 0;
@@ -325,6 +354,67 @@ inline uint32_t heap_caps_get_largest_free_block(int) {
   return 70000;
 }
 namespace esphome {
+class HostPreferences;
+class ESPPreferenceObject {
+ public:
+  HostPreferences* owner;
+  template <class T>
+  bool load(T* value);
+  template <class T>
+  bool save(const T* value);
+};
+class HostPreferences {
+ public:
+  std::vector<uint8_t> disk, pending;
+  unsigned saves{0};
+  bool fail_sync_once{false};
+  template <class T>
+  ESPPreferenceObject make_preference(uint32_t key) {
+    assert(key == 0x50425801);
+    return {this};
+  }
+  bool sync() {
+    if (fail_sync_once) {
+      fail_sync_once = false;
+      return false;
+    }
+    disk = pending;
+    return true;
+  }
+};
+template <class T>
+bool ESPPreferenceObject::load(T* value) {
+  if (owner->disk.size() != sizeof(T)) return false;
+  std::memcpy(value, owner->disk.data(), sizeof(T));
+  return true;
+}
+template <class T>
+bool ESPPreferenceObject::save(const T* value) {
+  ++owner->saves;
+  const auto* bytes = reinterpret_cast<const uint8_t*>(value);
+  owner->pending.assign(bytes, bytes + sizeof(T));
+  return true;
+}
+inline HostPreferences host_preferences;
+inline HostPreferences* global_preferences = &host_preferences;
+inline struct HostApp {
+  unsigned reboots{0};
+  void safe_reboot() {
+    ++reboots;
+  }
+} App;
+namespace text {
+class Text {
+ public:
+  std::string state;
+  void publish_state(const std::string& value) {
+    state = value;
+  }
+
+ protected:
+  virtual void control(const std::string&) = 0;
+};
+}  // namespace text
 inline uint32_t millis() {
   return host_now;
 }
@@ -341,7 +431,10 @@ class Component {
   bool is_failed() const {
     return failed_;
   }
-  void set_timeout(const std::string&, uint32_t, std::function<void()>) {}
+  std::vector<std::function<void()>> timeouts;
+  void set_timeout(const std::string&, uint32_t, std::function<void()> callback) {
+    timeouts.push_back(callback);
+  }
 };
 namespace media_player {
 enum MediaPlayerState {
@@ -396,11 +489,15 @@ class Select {
 
  public:
   struct Traits {
+    std::vector<std::string> options;
+    void set_options(const std::vector<std::string>& values) {
+      options = values;
+    }
     std::vector<std::string> get_options() const {
-      return {};
+      return options;
     }
   } traits;
-  void publish_state(const char*) {
+  void publish_state(const std::string&) {
     has_ = true;
   }
   bool has_state() const {

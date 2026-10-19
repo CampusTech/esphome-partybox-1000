@@ -16,6 +16,7 @@ extern "C" void partybox_native_event(uint8_t, uint32_t, uint8_t, uint8_t, uint3
 extern "C" void partybox_native_vendor_event(uint32_t, uint8_t, uint8_t, uint32_t, uint8_t, uint16_t, int16_t);
 struct Test : PartyBox {
   Test() {
+    set_peer_address(0x685210540098ULL);
     events_ = xQueueCreate(32, sizeof(Event));
     diagnostics_ = xQueueCreate(8, sizeof(Event));
     tws_ = true;
@@ -27,24 +28,29 @@ struct Test : PartyBox {
     native_rc_session_ = 7;
     state_.decode(0x090B1244, host_now);
   }
-  using PartyBox::indicator_;
   using PartyBox::a2dp_ready_;
   using PartyBox::connect_pending_;
   using PartyBox::dropped_;
   using PartyBox::event_;
+  using PartyBox::identity_;
+  using PartyBox::indicator_;
   using PartyBox::last_result_;
   using PartyBox::last_spp_attempt_;
+  using PartyBox::load_target_;
   using PartyBox::lost_;
+  using PartyBox::native_rc_active_;
   using PartyBox::native_rc_session_;
   using PartyBox::native_spp_epoch_;
   using PartyBox::native_spp_handle_;
   using PartyBox::overflow_;
+  using PartyBox::pairing_;
   using PartyBox::scheduler_;
   using PartyBox::spp_backoff_;
   using PartyBox::spp_connect_at_;
   using PartyBox::spp_connecting_;
   using PartyBox::spp_handle_;
   using PartyBox::spp_ready_;
+  using PartyBox::target_restart_pending_;
   using PartyBox::tws_;
   using PartyBox::words_;
   Event word(uint32_t v) {
@@ -71,6 +77,148 @@ int main(int argc, char** argv) {
     return 0;
   }
 #endif
+  if (test == "target_restore") {
+    t.set_peer_address(0x685210540098ULL);
+    t.load_target_();
+    uint8_t old[] = {0x68, 0x52, 0x10, 0x54, 0, 0x98};
+    assert(t.peer_matches(old));
+    assert(t.configure_target("68:52:10:54:01:1e"));
+    assert(t.target_restart_pending_);
+    assert(!t.request(Field::VOLUME, 12));
+    assert(!t.peer_matches(old));
+    t.action(0);
+    assert(!t.connect_pending_);
+    Test restored;
+    restored.load_target_();
+    uint8_t fresh[] = {0x68, 0x52, 0x10, 0x54, 1, 0x1e};
+    assert(restored.peer_matches(fresh));
+    assert(!restored.configure_target("bad"));
+    assert(!restored.target_restart_pending_);
+    unsigned writes = esphome::global_preferences->saves;
+    assert(!restored.configure_target("68:52:10:54:01:1E"));
+    assert(esphome::global_preferences->saves == writes);
+    esphome::global_preferences->fail_sync_once = true;
+    assert(!restored.configure_target("68:52:10:54:00:98"));
+    assert(restored.peer_matches(fresh));
+    Test after_failure;
+    after_failure.load_target_();
+    assert(after_failure.peer_matches(fresh));
+    assert(restored.configure_target(""));
+    Test disabled;
+    disabled.set_peer_address(0x685210540098ULL);
+    disabled.load_target_();
+    assert(!disabled.peer_matches(old));
+    std::cout << "PASS: durable target override, no-op, save failure rollback, clearing and fences\n";
+    return 0;
+  }
+  if (test == "pairing_window") {
+    t.identity_ = true;
+    t.action(4);
+    assert(!t.pairing_);  // Do not scan an active TWS connection.
+    t.tws_ = false;
+    t.native_rc_active_ = false;
+    t.native_spp_handle_ = 0;
+    t.spp_handle_ = 0;
+    t.action(4);
+    assert(t.pairing_ && host_discoveries == 1);
+    t.discovery_state(true);
+    Event found;
+    found.type = 20;
+    uint8_t address[] = {0x68, 0x52, 0x10, 0x54, 1, 0x1e};
+    std::memcpy(found.bytes, address, 6);
+    t.event_(found);
+    assert(!t.target_restart_pending_);  // Collect the full inquiry, not first result.
+    t.discovery_state(false);
+    t.loop();
+    assert(!t.pairing_ && t.target_restart_pending_);
+    Test restored;
+    restored.load_target_();
+    assert(restored.peer_matches(address));
+    std::cout << "PASS: active-link refusal, bounded discovery and single-candidate save\n";
+    return 0;
+  }
+  if (test == "pairing_ambiguity") {
+    t.tws_ = false;
+    t.native_rc_active_ = false;
+    t.native_spp_handle_ = 0;
+    t.spp_handle_ = 0;
+    t.identity_ = true;
+    t.action(4);
+    t.discovery_state(true);
+    Event found;
+    found.type = 20;
+    uint8_t address[] = {0x68, 0x52, 0x10, 0x54, 1, 0x1e};
+    std::memcpy(found.bytes, address, 6);
+    t.event_(found);
+    found.bytes[5] = 0x99;
+    t.event_(found);
+    t.discovery_state(false);
+    t.loop();
+    assert(!t.target_restart_pending_);
+    t.choose_candidate("Candidate 8");
+    assert(!t.target_restart_pending_);
+    t.choose_candidate("Candidate 1");
+    assert(t.target_restart_pending_);
+    Test restored;
+    restored.load_target_();
+    assert(restored.peer_matches(address));
+    std::cout << "PASS: multiple matches require explicit valid candidate selection\n";
+    return 0;
+  }
+  if (test == "target_restart_owner") {
+    struct Target : TargetAddress {
+      using TargetAddress::control;
+      using TargetAddress::TargetAddress;
+    } target(&t);
+    t.set_target_text(&target);
+    t.load_target_();
+    assert(target.state == "68:52:10:54:00:98");
+    t.mark_failed();
+    target.control("68:52:10:54:01:1e");
+    assert(target.state == "68:52:10:54:01:1E");
+    assert(target.timeouts.size() == 1);
+    target.control("68:52:10:54:00:98");
+    assert(target.timeouts.size() == 1);
+    target.timeouts.front()();
+    assert(esphome::App.reboots == 1);
+    std::cout << "PASS: target change safely restarts even when radio component failed\n";
+    return 0;
+  }
+  if (test == "pairing_lifecycle") {
+    t.tws_ = false;
+    t.native_rc_active_ = false;
+    t.native_spp_handle_ = 0;
+    t.spp_handle_ = 0;
+    t.identity_ = true;
+    t.action(4);
+    t.discovery_state(false);
+    t.loop();
+    assert(t.pairing_);  // Ignore old STOP before this scan's STARTED.
+    t.discovery_state(true);
+    Event found;
+    found.type = 20;
+    uint8_t address[] = {0x68, 0x52, 0x10, 0x54, 1, 0x1e};
+    std::memcpy(found.bytes, address, 6);
+    t.event_(found);
+    t.overflow_ = true;
+    t.discovery_state(false);
+    t.discovery_state(false);
+    t.loop();
+    assert(!t.pairing_ && !t.target_restart_pending_);
+    t.choose_candidate("Candidate 1");
+    assert(!t.target_restart_pending_);  // Never accept a partial failed scan.
+    t.action(4);
+    assert(!t.pairing_);  // Let duplicate callbacks drain before a new scan.
+    host_now += 2000;
+    t.action(4);
+    assert(t.pairing_);
+    assert(!t.audio_link(true));  // Connection crossing pairing admission fence is rejected.
+    unsigned closes = host_spp_disconnects;
+    t.spp_open(99);
+    assert(!t.native_spp_handle_ && host_spp_disconnects == closes + 1);
+    std::cout << "PASS: lossless scan completion, START barrier, failed-result refusal and admission fence\n";
+    return 0;
+  }
   if (test == "indicator_activity") {
     assert(t.request(Field::VOLUME, 12));
     t.loop();

@@ -12,6 +12,7 @@ from esphome.components import (
     media_player,
     select,
     sensor,
+    text,
     text_sensor,
 )
 from esphome.const import CONF_DISABLED_BY_DEFAULT, CONF_ID, CONF_NAME
@@ -26,6 +27,7 @@ AUTO_LOAD = [
     "sensor",
     "binary_sensor",
     "text_sensor",
+    "text",
 ]
 CONFLICTS_WITH = [
     "esp32_ble",
@@ -39,13 +41,22 @@ PartyBox = ns.class_("PartyBox", cg.Component)
 Player = ns.class_("Player", media_player.MediaPlayer)
 Choice = ns.class_("Choice", select.Select)
 Action = ns.class_("Action", button.Button)
+TargetAddress = ns.class_("TargetAddress", text.Text, cg.Component)
+PairingChoice = ns.class_("PairingChoice", select.Select)
 
 CHOICES = {
     "source": (0, ["Bluetooth", "USB", "AUX", "LINE IN"]),
     "bass": (1, ["Off", "Level 1", "Level 2"]),
     "lighting": (2, ["Off", "Pattern 1", "Pattern 2", "Pattern 3", "Pattern 4"]),
 }
-ACTIONS = {"connect": 0, "standby": 1, "wake": 2, "query_version": 3}
+ACTIONS = {
+    "connect": 0,
+    "standby": 1,
+    "wake": 2,
+    "query_version": 3,
+    "pair": 4,
+    "disconnect": 5,
+}
 SENSORS = [
     "volume_steps",
     "free_heap",
@@ -79,6 +90,11 @@ TEXTS = [
 ]
 
 DEFAULT_NAMES = {
+    "speaker_address": "Speaker Bluetooth address",
+    "pairing_candidate": "Pairing candidate",
+    "pairing_results": "Pairing results",
+    "pair": "Pair speaker",
+    "disconnect": "Disconnect Bluetooth",
     "media_player": "Player",
     "source": "Source",
     "bass": "Bass boost",
@@ -150,7 +166,20 @@ def entity_schema(key, schema):
 
 schema = {
     cv.GenerateID(): cv.declare_id(PartyBox),
-    cv.Required("mac_address"): cv.mac_address,
+    cv.Optional("mac_address"): cv.mac_address,
+    cv.Optional("speaker_address", default={}): entity_schema(
+        "speaker_address",
+        text.text_schema(TargetAddress, mode="TEXT", entity_category="config").extend(
+            cv.COMPONENT_SCHEMA
+        ),
+    ),
+    cv.Optional("pairing_candidate", default={}): entity_schema(
+        "pairing_candidate",
+        select.select_schema(PairingChoice, entity_category="config"),
+    ),
+    cv.Optional("pairing_results", default={}): entity_schema(
+        "pairing_results", text_sensor.text_sensor_schema(entity_category="diagnostic")
+    ),
     cv.Optional("spp_enabled", default=True): cv.boolean,
     cv.Optional("status_light"): cv.use_id(light.LightState),
     cv.Optional("status_brightness", default="8%"): cv.percentage,
@@ -168,7 +197,7 @@ for key in ACTIONS:
         button.button_schema(
             Action,
             entity_category="diagnostic"
-            if key in ("connect", "query_version")
+            if key in ("connect", "query_version", "disconnect")
             else cv.UNDEFINED,
         ),
     )
@@ -216,7 +245,25 @@ FINAL_VALIDATE_SCHEMA = validate_toolchain
 async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
-    cg.add(var.set_peer_address(config["mac_address"].as_hex))
+    if "mac_address" in config:
+        cg.add(var.set_peer_address(config["mac_address"].as_hex))
+    if config["speaker_address"] is not False:
+        child = cg.new_Pvariable(config["speaker_address"][CONF_ID], var)
+        await text.register_text(
+            child, config["speaker_address"], min_length=0, max_length=17
+        )
+        await cg.register_component(child, config["speaker_address"])
+        cg.add(var.set_target_text(child))
+    if config["pairing_candidate"] is not False:
+        child = await select.new_select(
+            config["pairing_candidate"],
+            var,
+            options=["None"] + [f"Candidate {i}" for i in range(1, 9)],
+        )
+        cg.add(var.set_pairing_choice(child))
+    if config["pairing_results"] is not False:
+        child = await text_sensor.new_text_sensor(config["pairing_results"])
+        cg.add(var.set_pairing_results(child))
     cg.add(var.set_spp_enabled(config["spp_enabled"]))
     if "status_light" in config:
         indicator = await cg.get_variable(config["status_light"])
