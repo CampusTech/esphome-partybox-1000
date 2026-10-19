@@ -8,7 +8,10 @@ The current checkout adds **Pair speaker**, **Disconnect Bluetooth**,
 **Speaker Bluetooth address**, **Pairing results** and **Pairing candidate**.
 These additions are not in the published `v0.1.0-beta.1` tag. Start with
 [the pairing example](../examples/pairing.yaml); it needs Wi-Fi/API credentials
-but no speaker address. This discovery path still needs live speaker validation.
+but no speaker address. A live single-speaker test confirmed automatic discovery,
+saving the target, restart persistence and both TWS/SPP connections on software
+`75/32/17/15/7`. Multiple-candidate selection and failed-scan handling currently
+have automated coverage; they still need hardware validation.
 
 1. Flash the bridge, connect it to Wi-Fi and add it to Home Assistant.
 2. If it already controls another speaker, press **Disconnect Bluetooth** and

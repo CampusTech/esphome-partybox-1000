@@ -46,8 +46,8 @@ choice. The saved target can also be edited in HA without reflashing.
 
 Use [examples/pairing.yaml](examples/pairing.yaml) and the
 [pairing guide](docs/pairing.md). This feature is not yet in the published beta
-tag and still needs live discovery validation. Normal operation keeps active
-scanning disabled. Changing targets restarts the bridge and requires TWS pairing.
+tag. Single-speaker discovery, saved-target restart and TWS/SPP admission have
+been verified on hardware. Normal operation keeps active scanning disabled. Changing targets restarts the bridge and requires TWS pairing.
 
 ## Optional RGB status LED
 
