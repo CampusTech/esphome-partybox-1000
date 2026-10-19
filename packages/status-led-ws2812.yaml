@@ -1,0 +1,19 @@
+# SDATEKIT ESP32-WROOM-32E: onboard WS2812B data is GPIO16.
+# Override the pin for other boards; omit this package when no RGB LED is fitted.
+substitutions:
+  partybox_status_led_pin: GPIO16
+
+light:
+  - platform: esp32_rmt_led_strip
+    id: partybox_status_light
+    internal: true
+    pin: ${partybox_status_led_pin}
+    num_leds: 1
+    chipset: WS2812
+    channel_colors: GRB
+    restore_mode: ALWAYS_OFF
+    default_transition_length: 0s
+    gamma_correct: 1.0
+
+partybox:
+  status_light: partybox_status_light

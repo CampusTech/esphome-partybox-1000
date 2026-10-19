@@ -154,6 +154,19 @@ class EntityConfigTests(unittest.TestCase):
         self.assertFalse(config["free_heap"]["disabled_by_default"])
         self.assertEqual(config["free_heap"]["name"], "Free heap")
 
+    def test_status_light_is_optional_and_brightness_is_validated(self):
+        default = self.validate()
+        self.assertNotIn("status_light", default)
+        self.assertEqual(default["status_brightness"], 0.08)
+        self.setUp()
+        config = self.validate(status_light="indicator", status_brightness="20%")
+        self.assertEqual(str(config["status_light"]), "indicator")
+        self.assertEqual(config["status_brightness"], 0.2)
+        for brightness in ["-1%", "101%"]:
+            self.setUp()
+            with self.subTest(brightness=brightness), self.assertRaises(cv.Invalid):
+                self.validate(status_brightness=brightness)
+
     def test_invalid_entity_options_still_fail(self):
         with self.assertRaises(cv.Invalid):
             self.validate(bass={"misspelled_name": "Bass"})

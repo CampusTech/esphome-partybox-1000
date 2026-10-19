@@ -293,7 +293,9 @@ struct esp_spp_cb_param_t {
   }
 HOST_OK(esp_bt_gap_ssp_confirm_reply)
 HOST_OK(esp_bt_gap_pin_reply)
-HOST_OK(esp_a2d_sink_register_stream_endpoint) HOST_OK(esp_bt_controller_init) HOST_OK(esp_bt_controller_enable)
+inline esp_err_t host_controller_init_result = ESP_OK;
+inline esp_err_t esp_bt_controller_init(void*) { return host_controller_init_result; }
+HOST_OK(esp_a2d_sink_register_stream_endpoint)  HOST_OK(esp_bt_controller_enable)
     HOST_OK(esp_bluedroid_init) HOST_OK(esp_bluedroid_enable) HOST_OK(esp_bt_gap_set_device_name)
         HOST_OK(esp_avrc_ct_init) HOST_OK(esp_avrc_ct_register_callback) HOST_OK(esp_avrc_tg_init)
             HOST_OK(esp_avrc_tg_register_callback) HOST_OK(esp_a2d_sink_register_audio_data_callback)

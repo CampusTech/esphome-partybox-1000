@@ -87,7 +87,11 @@ def run_checks(workspace, examples, flash, compile_target=False, negative=True):
         config = (
             workspace
             / "examples"
-            / ("minimal.yaml" if example == "minimal" else "partybox-1000.yaml")
+            / {
+                "minimal": "minimal.yaml",
+                "rgb": "rgb.yaml",
+                "full": "partybox-1000.yaml",
+            }[example]
         )
         esphome(config, "config")
         esphome(config, "compile", "--only-generate")
@@ -108,6 +112,11 @@ def run_checks(workspace, examples, flash, compile_target=False, negative=True):
                 raise ValueError("Low-level diagnostics must start disabled in HA")
             if generated_entity_flags(generated, "Player") & (1 << 25):
                 raise ValueError("The media player must start enabled in HA")
+        if example == "rgb":
+            if "set_status_light(" not in generated or "set_pin(16)" not in generated:
+                raise ValueError("RGB example must attach the GPIO16 status light")
+        elif "set_status_light(" in generated:
+            raise ValueError("RGB must remain opt-in")
         if compile_target:
             print(f"Compiling {example} ({flash})", flush=True)
             esphome(config, "compile", stream=True)
@@ -188,7 +197,9 @@ def run_checks(workspace, examples, flash, compile_target=False, negative=True):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--example", choices=["all", "full", "minimal"], default="all")
+    parser.add_argument(
+        "--example", choices=["all", "full", "minimal", "rgb"], default="all"
+    )
     parser.add_argument("--flash", choices=["4MB", "8MB"], default="4MB")
     parser.add_argument(
         "--compile",
@@ -203,7 +214,7 @@ def main():
     args = parser.parse_args()
     if importlib.metadata.version("esphome") != "2026.9.1":
         parser.error("Install the pinned requirements.txt (ESPHome 2026.9.1)")
-    examples = ["full", "minimal"] if args.example == "all" else [args.example]
+    examples = ["full", "minimal", "rgb"] if args.example == "all" else [args.example]
     try:
         if args.work_dir:
             args.work_dir.mkdir(parents=True, exist_ok=False)

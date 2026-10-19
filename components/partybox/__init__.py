@@ -8,6 +8,7 @@ from esphome.components import (
     binary_sensor,
     button,
     esp32,
+    light,
     media_player,
     select,
     sensor,
@@ -151,6 +152,8 @@ schema = {
     cv.GenerateID(): cv.declare_id(PartyBox),
     cv.Required("mac_address"): cv.mac_address,
     cv.Optional("spp_enabled", default=True): cv.boolean,
+    cv.Optional("status_light"): cv.use_id(light.LightState),
+    cv.Optional("status_brightness", default="8%"): cv.percentage,
     cv.Optional("media_player", default={}): entity_schema(
         "media_player", media_player.media_player_schema(Player)
     ),
@@ -215,6 +218,9 @@ async def to_code(config):
     await cg.register_component(var, config)
     cg.add(var.set_peer_address(config["mac_address"].as_hex))
     cg.add(var.set_spp_enabled(config["spp_enabled"]))
+    if "status_light" in config:
+        indicator = await cg.get_variable(config["status_light"])
+        cg.add(var.set_status_light(indicator, config["status_brightness"]))
     if config["media_player"] is not False:
         child = await media_player.new_media_player(config["media_player"], var)
         cg.add(var.set_player(child))

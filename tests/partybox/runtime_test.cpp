@@ -27,6 +27,7 @@ struct Test : PartyBox {
     native_rc_session_ = 7;
     state_.decode(0x090B1244, host_now);
   }
+  using PartyBox::indicator_;
   using PartyBox::a2dp_ready_;
   using PartyBox::connect_pending_;
   using PartyBox::dropped_;
@@ -58,7 +59,51 @@ int main(int argc, char** argv) {
   assert(argc == 2);
   std::string test = argv[1];
   Test t;
-  if (test == "source") {
+#ifdef USE_LIGHT
+  if (test == "indicator_setup_failure") {
+    esphome::light::LightState light;
+    t.set_status_light(&light, 0.08f);
+    host_controller_init_result = -1;
+    t.setup();
+    assert(t.is_failed());
+    assert(light.calls == 1);  // mark_failed removes the component from the real loop.
+    std::cout << "PASS: RGB setup failure is rendered before loop removal\n";
+    return 0;
+  }
+#endif
+  if (test == "indicator_activity") {
+    assert(t.request(Field::VOLUME, 12));
+    t.loop();
+    assert(t.indicator_.color(host_now, true, true, false) == IndicatorColor::GREEN);
+    Event tx;
+    tx.type = 10;
+    tx.session = 7;
+    tx.handle = 0;
+    tx.value = 0;
+    t.event_(tx);
+    assert(t.indicator_.color(host_now, true, true, false) == IndicatorColor::CYAN);
+    host_now += 120;
+    assert(t.indicator_.color(host_now, true, true, false) == IndicatorColor::GREEN);
+    tx.session = 6;
+    t.event_(tx);
+    assert(t.indicator_.color(host_now, true, true, false) == IndicatorColor::GREEN);
+    assert(!t.request(Field::VOLUME, 33));
+    assert(t.indicator_.color(host_now, true, true, false) == IndicatorColor::RED);
+  } else if (test == "indicator_spp_activity") {
+    assert(t.request(Field::SOURCE, 6));
+    t.loop();
+    assert(t.indicator_.color(host_now, true, true, false) == IndicatorColor::GREEN);
+    Event tx;
+    tx.type = 8;
+    tx.session = 1;
+    tx.value = 42;
+    tx.label = 1;
+    t.event_(tx);
+    assert(t.indicator_.color(host_now, true, true, false) == IndicatorColor::CYAN);
+    tx.label = 0;
+    t.event_(tx);
+    assert(t.indicator_.color(host_now, true, true, false) == IndicatorColor::RED);
+  } else if (test == "source") {
     assert(t.request(Field::SOURCE, 6));
     t.loop();
     t.event_(t.word(0x00010014));

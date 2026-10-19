@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Optional RGB health indicator with connection status, local command-write pulses and failure flashes.
+- RGB-enabled target compilation and runtime tests for optional light support and startup failures.
+
 ## 0.1.0-beta.1
 
 First public beta. Tested with PartyBox 1000 software `75/32/17/15/7`, ESPHome 2026.9.1 and ESP-IDF 5.5.5.

@@ -34,6 +34,34 @@ make individual controls unavailable while its API remains connected, or clear
 the player's individual volume/mute fields. Inspect confidence entities when
 those retained values matter. See [protocol and state semantics](docs/protocol.md).
 
+## Optional RGB status LED
+
+The supplied SDATEKIT ESP32-WROOM-32E schematic connects a WS2812B to
+**GPIO16**. Add the
+[LED package](packages/status-led-ws2812.yaml) alongside the base package;
+[examples/rgb.yaml](examples/rgb.yaml) shows the local-checkout configuration.
+This package currently requires the repository checkout; the tagged beta predates
+RGB support. Boards without this LED need no changes. Other boards can override
+`partybox_status_led_pin`.
+
+| LED | Meaning |
+|---|---|
+| Dim green | Wi-Fi, an API state subscriber, TWS and enabled SPP are connected; standby is healthy too |
+| Pulsing amber | Wi-Fi or API state subscriber missing |
+| Pulsing blue | Required speaker transport missing |
+| Brief cyan | A command was written to the Bluetooth transport |
+| Three red flashes | A command was refused, rejected, failed or timed out |
+| Steady red | PartyBox component failed |
+
+The schematic also places a **0-ohm RGB link** in the data line. Our tested
+SDATEKIT board shipped with that position empty, leaving the LED disconnected.
+Check that link before troubleshooting GPIO settings; driver health cannot detect
+an open connection or a different LED part.
+
+Brightness defaults to 8%; override `partybox.status_brightness` if desired.
+A transport write does not prove the speaker applied a command. The LED is
+internal and does not add a Home Assistant light entity or Bluetooth traffic.
+
 ## Install
 
 Use an original ESP32 with USB power, one per speaker. Install ESPHome **2026.9.1**;

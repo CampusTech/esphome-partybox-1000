@@ -17,6 +17,12 @@
 #include "esphome/core/hal.h"
 #include "esphome/core/log.h"
 #include "freertos/task.h"
+#ifdef USE_API
+#include "esphome/components/api/api_server.h"
+#endif
+#ifdef USE_WIFI
+#include "esphome/components/wifi/wifi_component.h"
+#endif
 
 #if ESP_IDF_VERSION != ESP_IDF_VERSION_VAL(5, 5, 5)
 #error "PartyBox's internal Bluetooth hooks require ESP-IDF 5.5.5; audit before upgrading"
@@ -238,12 +244,14 @@ void PartyBox::setup() {
   if (active_partybox) {
     ESP_LOGE(TAG, "Only one PartyBox Bluetooth owner is supported");
     mark_failed();
+    update_indicator_();
     return;
   }
   active_partybox = this;
   events_ = xQueueCreate(32, sizeof(Event));
   if (!events_) {
     mark_failed();
+    update_indicator_();
     return;
   }
   diagnostics_ = xQueueCreate(8, sizeof(Event));  // Best effort; absent/full means logs are lost.
@@ -255,6 +263,7 @@ void PartyBox::setup() {
     if (result == ESP_OK) return true;
     ESP_LOGE(TAG, "Bluetooth setup: %s", esp_err_to_name(result));
     mark_failed();
+    update_indicator_();
     return false;
   };
   if (!check(esp_bt_controller_init(&controller)) || !check(esp_bt_controller_enable(ESP_BT_MODE_CLASSIC_BT)) ||
@@ -278,7 +287,8 @@ void PartyBox::setup() {
   }
   if (!rssi_requests_) ESP_LOGI(TAG, "RSSI delta polling disabled: worker unavailable");
 }
-void PartyBox::result_(const char* s) {
+void PartyBox::result_(const char* s, bool error) {
+  if (error) indicator_.failed(millis());
   last_result_ = s;
   dirty_ = true;
   ESP_LOGI(TAG, "Command: %s", s);
@@ -292,16 +302,16 @@ bool PartyBox::eligible_(Field f, int v) const {
 }
 bool PartyBox::request(Field f, int value) {
   if (!eligible_(f, value)) {
-    result_("refused: unavailable or unknown state");
+    result_("refused: unavailable or unknown state", true);
     return false;
   }
   // Power actions cannot sit behind other commands or be duplicated while pending.
   if (f == Field::POWER && (scheduler_.pending() || scheduler_.size())) {
-    result_("refused: power requires idle command queue");
+    result_("refused: power requires idle command queue", true);
     return false;
   }
   if (!scheduler_.enqueue({f, value})) {
-    result_("refused: queue full or invalid value");
+    result_("refused: queue full or invalid value", true);
     return false;
   }
   result_("queued");
@@ -322,14 +332,14 @@ void PartyBox::action(uint8_t role) {
   }
   if (identity_) radio_readback();
   if (is_failed() || !a2dp_ready_ || tws_ || connect_pending_) {
-    result_("refused: connect not ready or already linked");
+    result_("refused: connect not ready or already linked", true);
     return;
   }
   connect_pending_ = true;
   connect_at_ = millis();
   const auto e = esp_a2d_sink_connect(peer_);
   if (e != ESP_OK) connect_pending_ = false;
-  result_(e == ESP_OK ? "connect requested" : "connect failed");
+  result_(e == ESP_OK ? "connect requested" : "connect failed", e != ESP_OK);
 }
 void PartyBox::lost_() {
   rssi_active_ = false;
@@ -361,7 +371,7 @@ void PartyBox::recover_() {
   portEXIT_CRITICAL(&transport_mux_);
   fence_active_ = true;
   lost_();
-  if (active && !partybox_queue_close(fenced_session_, handle)) result_("recovery close failed: reboot controller");
+  if (active && !partybox_queue_close(fenced_session_, handle)) result_("recovery close failed: reboot controller", true);
   esp_a2d_sink_disconnect(peer_);
 }
 void PartyBox::finish_(bool accepted) {
@@ -371,7 +381,7 @@ void PartyBox::finish_(bool accepted) {
            pending_label_, accepted);
   if (accepted) state_.assume(c.field, c.value, c.revision, millis());
   pending_spp_ = false;
-  result_(accepted ? "accepted: assumed until reported" : "rejected");
+  result_(accepted ? "accepted: assumed until reported" : "rejected", !accepted);
 }
 void PartyBox::event_(const Event& e) {
   const uint32_t now = millis();
@@ -431,7 +441,7 @@ void PartyBox::event_(const Event& e) {
       request(Field::VERSION, 0);
     } else {
       spp_backoff_ = std::min<uint32_t>(spp_backoff_ * 2, 60000U);
-      result_("SPP connection failed");
+      result_("SPP connection failed", true);
     }
   } else if (e.type == 5 && e.session == spp_session_ && e.value == spp_handle_) {
     spp_handle_ = 0;
@@ -447,11 +457,12 @@ void PartyBox::event_(const Event& e) {
   } else if (e.type >= 6 && e.type <= 8 && e.value == spp_handle_ && e.session == spp_session_) {
     if (e.type == 7) spp_congested_ = e.label;
     if (e.type == 8) {
+      if (e.label) indicator_.transmitted(now);
       spp_congested_ = e.handle;
       if (!e.label) {
         spp_poisoned_ = true;
         esp_spp_disconnect(spp_handle_);
-        result_("SPP write failed");
+        result_("SPP write failed", true);
       }
     }
     if (e.type == 6 && !spp_poisoned_)
@@ -476,6 +487,8 @@ void PartyBox::event_(const Event& e) {
                                                             : "connect failed: A2DP disconnected before TWS");
     connect_pending_ = false;
   } else if (e.type == 10) {
+    if (e.value == 0 && tws_ && e.session == session_ && e.handle == rc_handle_)
+      indicator_.transmitted(now);
     const bool matching = tws_ && e.session == session_ && e.handle == rc_handle_ && scheduler_.pending() &&
                           !pending_spp_ && e.label == pending_label_;
     ESP_LOGI(TAG, "Native TX session=%lu handle=%u label=%u status=%lu matching=%u", (unsigned long)e.session, e.handle,
@@ -483,7 +496,7 @@ void PartyBox::event_(const Event& e) {
     if (matching && e.value != 0) {
       scheduler_.ack(e.label, false);
       pending_spp_ = false;
-      result_("native TX failed: no peer ACK expected");
+      result_("native TX failed: no peer ACK expected", true);
     }
   } else if (e.type == 11) {
     ESP_LOGI(TAG, "Native response TX session=%lu handle=%u label=%u ctype=%u status=%u", (unsigned long)e.session,
@@ -520,7 +533,7 @@ void PartyBox::send_next_() {
   Command c;
   if (!scheduler_.take(c)) return;
   if (!eligible_(c.field, c.value)) {
-    result_("discarded: state changed before send");
+    result_("discarded: state changed before send", true);
     return;
   }
   const bool spp = c.field == Field::SOURCE || c.field == Field::VERSION;
@@ -535,7 +548,7 @@ void PartyBox::send_next_() {
     ++tries;
   }
   if (tries == 16) {
-    result_("refused: transaction labels exhausted; reconnect required");
+    result_("refused: transaction labels exhausted; reconnect required", true);
     return;
   }
   next_label_ = (label + 1) & 15;
@@ -573,6 +586,7 @@ void PartyBox::send_next_() {
     result_("sent: awaiting acknowledgement");
 }
 void PartyBox::loop() {
+  update_indicator_();
   if (is_failed()) return;
   const uint32_t now = millis();
   if (!identity_ && a2dp_ready_ && spp_ready_) {
@@ -589,6 +603,7 @@ void PartyBox::loop() {
     if (esp_bt_gap_set_cod(cod, ESP_BT_SET_COD_ALL) != ESP_OK || esp_bt_gap_config_eir_data(&eir) != ESP_OK ||
         esp_bt_gap_set_scan_mode(ESP_BT_CONNECTABLE, ESP_BT_LIMITED_DISCOVERABLE) != ESP_OK) {
       mark_failed();
+      update_indicator_();
       return;
     }
     identity_ = true;
@@ -598,7 +613,7 @@ void PartyBox::loop() {
   if (overflow_.exchange(false)) {
     xQueueReset(events_);
     recover_();
-    result_("event overflow: reconnect required");
+    result_("event overflow: reconnect required", true);
   }
   sync_spp_();
   Event e;
@@ -615,7 +630,7 @@ void PartyBox::loop() {
   }
   if (connect_pending_ && uint32_t(now - connect_at_) >= 20000) {
     connect_pending_ = false;
-    result_("connect timed out");
+    result_("connect timed out", true);
   }
   if (spp_connecting_ && !spp_connect_warned_ && uint32_t(now - spp_connect_at_) >= 20000) {
     spp_connect_warned_ = true;
@@ -643,7 +658,7 @@ void PartyBox::loop() {
       esp_spp_disconnect(spp_handle_);
     }
     pending_spp_ = false;
-    result_("timed out: state unconfirmed; no retry");
+    result_("timed out: state unconfirmed; no retry", true);
   }
   send_next_();
   if (dirty_ || uint32_t(now - last_publish_) >= 5000) {
@@ -651,6 +666,36 @@ void PartyBox::loop() {
     dirty_ = false;
     last_publish_ = now;
   }
+}
+void PartyBox::update_indicator_() {
+#ifdef USE_LIGHT
+  if (!status_light_) return;
+  bool network_ready = true;
+#ifdef USE_WIFI
+  network_ready = wifi::global_wifi_component && wifi::global_wifi_component->is_connected();
+#endif
+#ifdef USE_API
+  network_ready = network_ready && api::global_api_server &&
+                  api::global_api_server->is_connected_with_state_subscription();
+#endif
+  const bool speaker_ready = tws_ && (!spp_enabled_ || (spp_handle_ && !spp_poisoned_));
+  const auto color = indicator_.color(millis(), network_ready, speaker_ready, is_failed());
+  if (indicator_initialized_ && color == last_indicator_) return;
+  indicator_initialized_ = true;
+  last_indicator_ = color;
+  const bool red = color == IndicatorColor::RED || color == IndicatorColor::AMBER;
+  const bool green = color == IndicatorColor::GREEN || color == IndicatorColor::AMBER || color == IndicatorColor::CYAN;
+  const bool blue = color == IndicatorColor::BLUE || color == IndicatorColor::CYAN;
+  auto call = status_light_->make_call();
+  call.set_state(color != IndicatorColor::OFF)
+      .set_transition_length(0)
+      .set_brightness(status_brightness_)
+      .set_rgb(red ? 1.0f : 0.0f, green ? (color == IndicatorColor::AMBER ? 0.3f : 1.0f) : 0.0f,
+               blue ? 1.0f : 0.0f)
+      .set_publish(false)
+      .set_save(false)
+      .perform();
+#endif
 }
 void PartyBox::publish_() {
   using namespace media_player;

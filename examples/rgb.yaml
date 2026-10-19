@@ -1,0 +1,4 @@
+# Full controls plus the SDATEKIT board's optional onboard RGB status LED.
+packages:
+  base: !include partybox-1000.yaml
+  status_led: !include ../packages/status-led-ws2812.yaml

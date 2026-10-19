@@ -2,6 +2,7 @@
 #include <atomic>
 
 #include "core.h"
+#include "indicator.h"
 #include "esphome/components/binary_sensor/binary_sensor.h"
 #include "esphome/components/button/button.h"
 #include "esphome/components/media_player/media_player.h"
@@ -9,6 +10,9 @@
 #include "esphome/components/sensor/sensor.h"
 #include "esphome/components/text_sensor/text_sensor.h"
 #include "esphome/core/component.h"
+#ifdef USE_LIGHT
+#include "esphome/components/light/light_state.h"
+#endif
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 
@@ -79,6 +83,12 @@ class PartyBox : public Component {
   void set_spp_enabled(bool enabled) {
     spp_enabled_ = enabled;
   }
+#ifdef USE_LIGHT
+  void set_status_light(light::LightState* light, float brightness) {
+    status_light_ = light;
+    status_brightness_ = brightness;
+  }
+#endif
   void set_player(Player* p) {
     player_ = p;
   }
@@ -103,7 +113,8 @@ class PartyBox : public Component {
   void lost_();
   void recover_();
   void sync_spp_();
-  void result_(const char* result);
+  void result_(const char* result, bool error = false);
+  void update_indicator_();
   static void rssi_worker_(void* context);
   bool eligible_(Field field, int value) const;
   uint8_t peer_[6]{};
@@ -120,6 +131,13 @@ class PartyBox : public Component {
   bool native_rc_active_{false};
   uint32_t fenced_session_{0};
   bool fence_active_{false}, spp_connect_warned_{false};
+  Indicator indicator_{};
+#ifdef USE_LIGHT
+  light::LightState* status_light_{nullptr};
+  float status_brightness_{0.08f};
+  IndicatorColor last_indicator_{IndicatorColor::OFF};
+  bool indicator_initialized_{false};
+#endif
   State state_{};
   Scheduler scheduler_{};
   SppFramer framer_{};
