@@ -41,6 +41,10 @@ For multiple speakers, the [expandable mixer dashboard](docs/dashboard.md)
 provides a master volume fader, individual faders and speaker controls. Adding
 a player to one group helper expands the dashboard automatically.
 
+The [firmware volume curve](docs/volume-curve.md) maps all 33 levels to relative
+dB gain, verified offline against V63, V64 and V75. It can support zone gain
+matching; room loudness still requires calibration.
+
 ## Pairing without a MAC address
 
 The current checkout adds a **Pair speaker** button in HA. Put the intended JBL

@@ -1,0 +1,4010 @@
+{
+  "scope": "Original ARM master setters; all 33 levels, four modeled input selections, three releases",
+  "db_interpretation": "20*log10(coefficient/max_coefficient); assumes linear amplitude coefficients",
+  "zero_level": "Zero coefficient; gain is negative infinity, represented by null",
+  "limitations": [
+    "Requested DSP writes were captured; the DSP itself and acoustic output were not emulated or measured.",
+    "Hardware transfer and acknowledgements, diagnostic clock and logger were stubbed; notify_ui=0.",
+    "Input trims, EQ/bass, amplifier gain, limiters, prompt overrides and speaker sensitivity are outside this curve."
+  ],
+  "identical_across_versions": true,
+  "verified_cases": 396,
+  "versions": {
+    "V63": {
+      "file": "PB1000_FW_V63_FULL.bin",
+      "sha256": "0f13a8c0e264ad8f78b880f4246bab66497a5d38a975b0da5bf07f97c4b208db",
+      "setter_file_offset": "0x6ced0",
+      "setter_runtime_address": "0x1f3ad0",
+      "index_table_runtime_address": "0x34f6b4",
+      "coefficient_table_runtime_address": "0x34f4b8",
+      "levels": [
+        {
+          "level": 0,
+          "ha_volume_percent": 0.0,
+          "index": 71,
+          "coefficient_hex": "000000",
+          "gain_db_relative_to_max": null,
+          "nominal_gain_db_relative_to_max": null
+        },
+        {
+          "level": 1,
+          "ha_volume_percent": 3.125,
+          "index": 65,
+          "coefficient_hex": "00049b",
+          "gain_db_relative_to_max": -65.002322,
+          "nominal_gain_db_relative_to_max": -65
+        },
+        {
+          "level": 2,
+          "ha_volume_percent": 6.25,
+          "index": 60,
+          "coefficient_hex": "000831",
+          "gain_db_relative_to_max": -60.00063,
+          "nominal_gain_db_relative_to_max": -60
+        },
+        {
+          "level": 3,
+          "ha_volume_percent": 9.375,
+          "index": 55,
+          "coefficient_hex": "000e91",
+          "gain_db_relative_to_max": -55.000751,
+          "nominal_gain_db_relative_to_max": -55
+        },
+        {
+          "level": 4,
+          "ha_volume_percent": 12.5,
+          "index": 50,
+          "coefficient_hex": "0019e8",
+          "gain_db_relative_to_max": -49.999708,
+          "nominal_gain_db_relative_to_max": -50
+        },
+        {
+          "level": 5,
+          "ha_volume_percent": 15.625,
+          "index": 46,
+          "coefficient_hex": "00290f",
+          "gain_db_relative_to_max": -45.999717,
+          "nominal_gain_db_relative_to_max": -46
+        },
+        {
+          "level": 6,
+          "ha_volume_percent": 18.75,
+          "index": 42,
+          "coefficient_hex": "004112",
+          "gain_db_relative_to_max": -42.000141,
+          "nominal_gain_db_relative_to_max": -42
+        },
+        {
+          "level": 7,
+          "ha_volume_percent": 21.875,
+          "index": 38,
+          "coefficient_hex": "006722",
+          "gain_db_relative_to_max": -37.999862,
+          "nominal_gain_db_relative_to_max": -38
+        },
+        {
+          "level": 8,
+          "ha_volume_percent": 25.0,
+          "index": 35,
+          "coefficient_hex": "0091ad",
+          "gain_db_relative_to_max": -35.000052,
+          "nominal_gain_db_relative_to_max": -35
+        },
+        {
+          "level": 9,
+          "ha_volume_percent": 28.125,
+          "index": 32,
+          "coefficient_hex": "00cdc6",
+          "gain_db_relative_to_max": -32.000013,
+          "nominal_gain_db_relative_to_max": -32
+        },
+        {
+          "level": 10,
+          "ha_volume_percent": 31.25,
+          "index": 29,
+          "coefficient_hex": "0122aa",
+          "gain_db_relative_to_max": -28.999972,
+          "nominal_gain_db_relative_to_max": -29
+        },
+        {
+          "level": 11,
+          "ha_volume_percent": 34.375,
+          "index": 27,
+          "coefficient_hex": "016dec",
+          "gain_db_relative_to_max": -27.000031,
+          "nominal_gain_db_relative_to_max": -27
+        },
+        {
+          "level": 12,
+          "ha_volume_percent": 37.5,
+          "index": 25,
+          "coefficient_hex": "01ccac",
+          "gain_db_relative_to_max": -24.999965,
+          "nominal_gain_db_relative_to_max": -25
+        },
+        {
+          "level": 13,
+          "ha_volume_percent": 40.625,
+          "index": 23,
+          "coefficient_hex": "0243f3",
+          "gain_db_relative_to_max": -23.0,
+          "nominal_gain_db_relative_to_max": -23
+        },
+        {
+          "level": 14,
+          "ha_volume_percent": 43.75,
+          "index": 21,
+          "coefficient_hex": "02da1d",
+          "gain_db_relative_to_max": -20.999994,
+          "nominal_gain_db_relative_to_max": -21
+        },
+        {
+          "level": 15,
+          "ha_volume_percent": 46.875,
+          "index": 19,
+          "coefficient_hex": "039728",
+          "gain_db_relative_to_max": -19.000012,
+          "nominal_gain_db_relative_to_max": -19
+        },
+        {
+          "level": 16,
+          "ha_volume_percent": 50.0,
+          "index": 17,
+          "coefficient_hex": "048527",
+          "gain_db_relative_to_max": -16.999988,
+          "nominal_gain_db_relative_to_max": -17
+        },
+        {
+          "level": 17,
+          "ha_volume_percent": 53.125,
+          "index": 15,
+          "coefficient_hex": "05b0c4",
+          "gain_db_relative_to_max": -15.000005,
+          "nominal_gain_db_relative_to_max": -15
+        },
+        {
+          "level": 18,
+          "ha_volume_percent": 56.25,
+          "index": 14,
+          "coefficient_hex": "066254",
+          "gain_db_relative_to_max": -14.001014,
+          "nominal_gain_db_relative_to_max": -14
+        },
+        {
+          "level": 19,
+          "ha_volume_percent": 59.375,
+          "index": 13,
+          "coefficient_hex": "0729f6",
+          "gain_db_relative_to_max": -12.999997,
+          "nominal_gain_db_relative_to_max": -13
+        },
+        {
+          "level": 20,
+          "ha_volume_percent": 62.5,
+          "index": 12,
+          "coefficient_hex": "0809bd",
+          "gain_db_relative_to_max": -11.999996,
+          "nominal_gain_db_relative_to_max": -12
+        },
+        {
+          "level": 21,
+          "ha_volume_percent": 65.625,
+          "index": 11,
+          "coefficient_hex": "0904d2",
+          "gain_db_relative_to_max": -10.999996,
+          "nominal_gain_db_relative_to_max": -11
+        },
+        {
+          "level": 22,
+          "ha_volume_percent": 68.75,
+          "index": 10,
+          "coefficient_hex": "0a1e8a",
+          "gain_db_relative_to_max": -9.999996,
+          "nominal_gain_db_relative_to_max": -10
+        },
+        {
+          "level": 23,
+          "ha_volume_percent": 71.875,
+          "index": 9,
+          "coefficient_hex": "0b5aa2",
+          "gain_db_relative_to_max": -8.999995,
+          "nominal_gain_db_relative_to_max": -9
+        },
+        {
+          "level": 24,
+          "ha_volume_percent": 75.0,
+          "index": 8,
+          "coefficient_hex": "0cbd4b",
+          "gain_db_relative_to_max": -8.000003,
+          "nominal_gain_db_relative_to_max": -8
+        },
+        {
+          "level": 25,
+          "ha_volume_percent": 78.125,
+          "index": 7,
+          "coefficient_hex": "0e4b3b",
+          "gain_db_relative_to_max": -7.000004,
+          "nominal_gain_db_relative_to_max": -7
+        },
+        {
+          "level": 26,
+          "ha_volume_percent": 81.25,
+          "index": 6,
+          "coefficient_hex": "1009ba",
+          "gain_db_relative_to_max": -5.999998,
+          "nominal_gain_db_relative_to_max": -6
+        },
+        {
+          "level": 27,
+          "ha_volume_percent": 84.375,
+          "index": 5,
+          "coefficient_hex": "11feb3",
+          "gain_db_relative_to_max": -5.000002,
+          "nominal_gain_db_relative_to_max": -5
+        },
+        {
+          "level": 28,
+          "ha_volume_percent": 87.5,
+          "index": 4,
+          "coefficient_hex": "1430cd",
+          "gain_db_relative_to_max": -4.000003,
+          "nominal_gain_db_relative_to_max": -4
+        },
+        {
+          "level": 29,
+          "ha_volume_percent": 90.625,
+          "index": 3,
+          "coefficient_hex": "16a77e",
+          "gain_db_relative_to_max": -3.0,
+          "nominal_gain_db_relative_to_max": -3
+        },
+        {
+          "level": 30,
+          "ha_volume_percent": 93.75,
+          "index": 2,
+          "coefficient_hex": "196b23",
+          "gain_db_relative_to_max": -2.0,
+          "nominal_gain_db_relative_to_max": -2
+        },
+        {
+          "level": 31,
+          "ha_volume_percent": 96.875,
+          "index": 1,
+          "coefficient_hex": "1c8521",
+          "gain_db_relative_to_max": -0.999999,
+          "nominal_gain_db_relative_to_max": -1
+        },
+        {
+          "level": 32,
+          "ha_volume_percent": 100.0,
+          "index": 0,
+          "coefficient_hex": "200000",
+          "gain_db_relative_to_max": 0.0,
+          "nominal_gain_db_relative_to_max": 0
+        }
+      ],
+      "verified_setter_cases": [
+        {
+          "source": "USB",
+          "level": 0,
+          "packets": [
+            "80004a000000",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 1,
+          "packets": [
+            "80004a00049b",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 2,
+          "packets": [
+            "80004a000831",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 3,
+          "packets": [
+            "80004a000e91",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 4,
+          "packets": [
+            "80004a0019e8",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 5,
+          "packets": [
+            "80004a00290f",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 6,
+          "packets": [
+            "80004a004112",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 7,
+          "packets": [
+            "80004a006722",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 8,
+          "packets": [
+            "80004a0091ad",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 9,
+          "packets": [
+            "80004a00cdc6",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 10,
+          "packets": [
+            "80004a0122aa",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 11,
+          "packets": [
+            "80004a016dec",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 12,
+          "packets": [
+            "80004a01ccac",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 13,
+          "packets": [
+            "80004a0243f3",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 14,
+          "packets": [
+            "80004a02da1d",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 15,
+          "packets": [
+            "80004a039728",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 16,
+          "packets": [
+            "80004a048527",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 17,
+          "packets": [
+            "80004a05b0c4",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 18,
+          "packets": [
+            "80004a066254",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 19,
+          "packets": [
+            "80004a0729f6",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 20,
+          "packets": [
+            "80004a0809bd",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 21,
+          "packets": [
+            "80004a0904d2",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 22,
+          "packets": [
+            "80004a0a1e8a",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 23,
+          "packets": [
+            "80004a0b5aa2",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 24,
+          "packets": [
+            "80004a0cbd4b",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 25,
+          "packets": [
+            "80004a0e4b3b",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 26,
+          "packets": [
+            "80004a1009ba",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 27,
+          "packets": [
+            "80004a11feb3",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 28,
+          "packets": [
+            "80004a1430cd",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 29,
+          "packets": [
+            "80004a16a77e",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 30,
+          "packets": [
+            "80004a196b23",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 31,
+          "packets": [
+            "80004a1c8521",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 32,
+          "packets": [
+            "80004a200000",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 0,
+          "packets": [
+            "80004a000000",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 1,
+          "packets": [
+            "80004a00049b",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 2,
+          "packets": [
+            "80004a000831",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 3,
+          "packets": [
+            "80004a000e91",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 4,
+          "packets": [
+            "80004a0019e8",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 5,
+          "packets": [
+            "80004a00290f",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 6,
+          "packets": [
+            "80004a004112",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 7,
+          "packets": [
+            "80004a006722",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 8,
+          "packets": [
+            "80004a0091ad",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 9,
+          "packets": [
+            "80004a00cdc6",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 10,
+          "packets": [
+            "80004a0122aa",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 11,
+          "packets": [
+            "80004a016dec",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 12,
+          "packets": [
+            "80004a01ccac",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 13,
+          "packets": [
+            "80004a0243f3",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 14,
+          "packets": [
+            "80004a02da1d",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 15,
+          "packets": [
+            "80004a039728",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 16,
+          "packets": [
+            "80004a048527",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 17,
+          "packets": [
+            "80004a05b0c4",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 18,
+          "packets": [
+            "80004a066254",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 19,
+          "packets": [
+            "80004a0729f6",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 20,
+          "packets": [
+            "80004a0809bd",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 21,
+          "packets": [
+            "80004a0904d2",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 22,
+          "packets": [
+            "80004a0a1e8a",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 23,
+          "packets": [
+            "80004a0b5aa2",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 24,
+          "packets": [
+            "80004a0cbd4b",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 25,
+          "packets": [
+            "80004a0e4b3b",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 26,
+          "packets": [
+            "80004a1009ba",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 27,
+          "packets": [
+            "80004a11feb3",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 28,
+          "packets": [
+            "80004a1430cd",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 29,
+          "packets": [
+            "80004a16a77e",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 30,
+          "packets": [
+            "80004a196b23",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 31,
+          "packets": [
+            "80004a1c8521",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 32,
+          "packets": [
+            "80004a200000",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 0,
+          "packets": [
+            "80004a000000",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 1,
+          "packets": [
+            "80004a00049b",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 2,
+          "packets": [
+            "80004a000831",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 3,
+          "packets": [
+            "80004a000e91",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 4,
+          "packets": [
+            "80004a0019e8",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 5,
+          "packets": [
+            "80004a00290f",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 6,
+          "packets": [
+            "80004a004112",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 7,
+          "packets": [
+            "80004a006722",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 8,
+          "packets": [
+            "80004a0091ad",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 9,
+          "packets": [
+            "80004a00cdc6",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 10,
+          "packets": [
+            "80004a0122aa",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 11,
+          "packets": [
+            "80004a016dec",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 12,
+          "packets": [
+            "80004a01ccac",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 13,
+          "packets": [
+            "80004a0243f3",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 14,
+          "packets": [
+            "80004a02da1d",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 15,
+          "packets": [
+            "80004a039728",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 16,
+          "packets": [
+            "80004a048527",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 17,
+          "packets": [
+            "80004a05b0c4",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 18,
+          "packets": [
+            "80004a066254",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 19,
+          "packets": [
+            "80004a0729f6",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 20,
+          "packets": [
+            "80004a0809bd",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 21,
+          "packets": [
+            "80004a0904d2",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 22,
+          "packets": [
+            "80004a0a1e8a",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 23,
+          "packets": [
+            "80004a0b5aa2",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 24,
+          "packets": [
+            "80004a0cbd4b",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 25,
+          "packets": [
+            "80004a0e4b3b",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 26,
+          "packets": [
+            "80004a1009ba",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 27,
+          "packets": [
+            "80004a11feb3",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 28,
+          "packets": [
+            "80004a1430cd",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 29,
+          "packets": [
+            "80004a16a77e",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 30,
+          "packets": [
+            "80004a196b23",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 31,
+          "packets": [
+            "80004a1c8521",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 32,
+          "packets": [
+            "80004a200000",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 0,
+          "packets": [
+            "80004a000000",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 1,
+          "packets": [
+            "80004a00049b",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 2,
+          "packets": [
+            "80004a000831",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 3,
+          "packets": [
+            "80004a000e91",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 4,
+          "packets": [
+            "80004a0019e8",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 5,
+          "packets": [
+            "80004a00290f",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 6,
+          "packets": [
+            "80004a004112",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 7,
+          "packets": [
+            "80004a006722",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 8,
+          "packets": [
+            "80004a0091ad",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 9,
+          "packets": [
+            "80004a00cdc6",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 10,
+          "packets": [
+            "80004a0122aa",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 11,
+          "packets": [
+            "80004a016dec",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 12,
+          "packets": [
+            "80004a01ccac",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 13,
+          "packets": [
+            "80004a0243f3",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 14,
+          "packets": [
+            "80004a02da1d",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 15,
+          "packets": [
+            "80004a039728",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 16,
+          "packets": [
+            "80004a048527",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 17,
+          "packets": [
+            "80004a05b0c4",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 18,
+          "packets": [
+            "80004a066254",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 19,
+          "packets": [
+            "80004a0729f6",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 20,
+          "packets": [
+            "80004a0809bd",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 21,
+          "packets": [
+            "80004a0904d2",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 22,
+          "packets": [
+            "80004a0a1e8a",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 23,
+          "packets": [
+            "80004a0b5aa2",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 24,
+          "packets": [
+            "80004a0cbd4b",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 25,
+          "packets": [
+            "80004a0e4b3b",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 26,
+          "packets": [
+            "80004a1009ba",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 27,
+          "packets": [
+            "80004a11feb3",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 28,
+          "packets": [
+            "80004a1430cd",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 29,
+          "packets": [
+            "80004a16a77e",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 30,
+          "packets": [
+            "80004a196b23",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 31,
+          "packets": [
+            "80004a1c8521",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 32,
+          "packets": [
+            "80004a200000",
+            "a50000"
+          ]
+        }
+      ]
+    },
+    "V64": {
+      "file": "PB1000_FW_V64_FULL.bin",
+      "sha256": "3329d1e74c96b44c431e7359b41e1988d72bed45e0b7b1cfa3dfa69b7e11e436",
+      "setter_file_offset": "0x6cf18",
+      "setter_runtime_address": "0x1f3b18",
+      "index_table_runtime_address": "0x34f6b4",
+      "coefficient_table_runtime_address": "0x34f4b8",
+      "levels": [
+        {
+          "level": 0,
+          "ha_volume_percent": 0.0,
+          "index": 71,
+          "coefficient_hex": "000000",
+          "gain_db_relative_to_max": null,
+          "nominal_gain_db_relative_to_max": null
+        },
+        {
+          "level": 1,
+          "ha_volume_percent": 3.125,
+          "index": 65,
+          "coefficient_hex": "00049b",
+          "gain_db_relative_to_max": -65.002322,
+          "nominal_gain_db_relative_to_max": -65
+        },
+        {
+          "level": 2,
+          "ha_volume_percent": 6.25,
+          "index": 60,
+          "coefficient_hex": "000831",
+          "gain_db_relative_to_max": -60.00063,
+          "nominal_gain_db_relative_to_max": -60
+        },
+        {
+          "level": 3,
+          "ha_volume_percent": 9.375,
+          "index": 55,
+          "coefficient_hex": "000e91",
+          "gain_db_relative_to_max": -55.000751,
+          "nominal_gain_db_relative_to_max": -55
+        },
+        {
+          "level": 4,
+          "ha_volume_percent": 12.5,
+          "index": 50,
+          "coefficient_hex": "0019e8",
+          "gain_db_relative_to_max": -49.999708,
+          "nominal_gain_db_relative_to_max": -50
+        },
+        {
+          "level": 5,
+          "ha_volume_percent": 15.625,
+          "index": 46,
+          "coefficient_hex": "00290f",
+          "gain_db_relative_to_max": -45.999717,
+          "nominal_gain_db_relative_to_max": -46
+        },
+        {
+          "level": 6,
+          "ha_volume_percent": 18.75,
+          "index": 42,
+          "coefficient_hex": "004112",
+          "gain_db_relative_to_max": -42.000141,
+          "nominal_gain_db_relative_to_max": -42
+        },
+        {
+          "level": 7,
+          "ha_volume_percent": 21.875,
+          "index": 38,
+          "coefficient_hex": "006722",
+          "gain_db_relative_to_max": -37.999862,
+          "nominal_gain_db_relative_to_max": -38
+        },
+        {
+          "level": 8,
+          "ha_volume_percent": 25.0,
+          "index": 35,
+          "coefficient_hex": "0091ad",
+          "gain_db_relative_to_max": -35.000052,
+          "nominal_gain_db_relative_to_max": -35
+        },
+        {
+          "level": 9,
+          "ha_volume_percent": 28.125,
+          "index": 32,
+          "coefficient_hex": "00cdc6",
+          "gain_db_relative_to_max": -32.000013,
+          "nominal_gain_db_relative_to_max": -32
+        },
+        {
+          "level": 10,
+          "ha_volume_percent": 31.25,
+          "index": 29,
+          "coefficient_hex": "0122aa",
+          "gain_db_relative_to_max": -28.999972,
+          "nominal_gain_db_relative_to_max": -29
+        },
+        {
+          "level": 11,
+          "ha_volume_percent": 34.375,
+          "index": 27,
+          "coefficient_hex": "016dec",
+          "gain_db_relative_to_max": -27.000031,
+          "nominal_gain_db_relative_to_max": -27
+        },
+        {
+          "level": 12,
+          "ha_volume_percent": 37.5,
+          "index": 25,
+          "coefficient_hex": "01ccac",
+          "gain_db_relative_to_max": -24.999965,
+          "nominal_gain_db_relative_to_max": -25
+        },
+        {
+          "level": 13,
+          "ha_volume_percent": 40.625,
+          "index": 23,
+          "coefficient_hex": "0243f3",
+          "gain_db_relative_to_max": -23.0,
+          "nominal_gain_db_relative_to_max": -23
+        },
+        {
+          "level": 14,
+          "ha_volume_percent": 43.75,
+          "index": 21,
+          "coefficient_hex": "02da1d",
+          "gain_db_relative_to_max": -20.999994,
+          "nominal_gain_db_relative_to_max": -21
+        },
+        {
+          "level": 15,
+          "ha_volume_percent": 46.875,
+          "index": 19,
+          "coefficient_hex": "039728",
+          "gain_db_relative_to_max": -19.000012,
+          "nominal_gain_db_relative_to_max": -19
+        },
+        {
+          "level": 16,
+          "ha_volume_percent": 50.0,
+          "index": 17,
+          "coefficient_hex": "048527",
+          "gain_db_relative_to_max": -16.999988,
+          "nominal_gain_db_relative_to_max": -17
+        },
+        {
+          "level": 17,
+          "ha_volume_percent": 53.125,
+          "index": 15,
+          "coefficient_hex": "05b0c4",
+          "gain_db_relative_to_max": -15.000005,
+          "nominal_gain_db_relative_to_max": -15
+        },
+        {
+          "level": 18,
+          "ha_volume_percent": 56.25,
+          "index": 14,
+          "coefficient_hex": "066254",
+          "gain_db_relative_to_max": -14.001014,
+          "nominal_gain_db_relative_to_max": -14
+        },
+        {
+          "level": 19,
+          "ha_volume_percent": 59.375,
+          "index": 13,
+          "coefficient_hex": "0729f6",
+          "gain_db_relative_to_max": -12.999997,
+          "nominal_gain_db_relative_to_max": -13
+        },
+        {
+          "level": 20,
+          "ha_volume_percent": 62.5,
+          "index": 12,
+          "coefficient_hex": "0809bd",
+          "gain_db_relative_to_max": -11.999996,
+          "nominal_gain_db_relative_to_max": -12
+        },
+        {
+          "level": 21,
+          "ha_volume_percent": 65.625,
+          "index": 11,
+          "coefficient_hex": "0904d2",
+          "gain_db_relative_to_max": -10.999996,
+          "nominal_gain_db_relative_to_max": -11
+        },
+        {
+          "level": 22,
+          "ha_volume_percent": 68.75,
+          "index": 10,
+          "coefficient_hex": "0a1e8a",
+          "gain_db_relative_to_max": -9.999996,
+          "nominal_gain_db_relative_to_max": -10
+        },
+        {
+          "level": 23,
+          "ha_volume_percent": 71.875,
+          "index": 9,
+          "coefficient_hex": "0b5aa2",
+          "gain_db_relative_to_max": -8.999995,
+          "nominal_gain_db_relative_to_max": -9
+        },
+        {
+          "level": 24,
+          "ha_volume_percent": 75.0,
+          "index": 8,
+          "coefficient_hex": "0cbd4b",
+          "gain_db_relative_to_max": -8.000003,
+          "nominal_gain_db_relative_to_max": -8
+        },
+        {
+          "level": 25,
+          "ha_volume_percent": 78.125,
+          "index": 7,
+          "coefficient_hex": "0e4b3b",
+          "gain_db_relative_to_max": -7.000004,
+          "nominal_gain_db_relative_to_max": -7
+        },
+        {
+          "level": 26,
+          "ha_volume_percent": 81.25,
+          "index": 6,
+          "coefficient_hex": "1009ba",
+          "gain_db_relative_to_max": -5.999998,
+          "nominal_gain_db_relative_to_max": -6
+        },
+        {
+          "level": 27,
+          "ha_volume_percent": 84.375,
+          "index": 5,
+          "coefficient_hex": "11feb3",
+          "gain_db_relative_to_max": -5.000002,
+          "nominal_gain_db_relative_to_max": -5
+        },
+        {
+          "level": 28,
+          "ha_volume_percent": 87.5,
+          "index": 4,
+          "coefficient_hex": "1430cd",
+          "gain_db_relative_to_max": -4.000003,
+          "nominal_gain_db_relative_to_max": -4
+        },
+        {
+          "level": 29,
+          "ha_volume_percent": 90.625,
+          "index": 3,
+          "coefficient_hex": "16a77e",
+          "gain_db_relative_to_max": -3.0,
+          "nominal_gain_db_relative_to_max": -3
+        },
+        {
+          "level": 30,
+          "ha_volume_percent": 93.75,
+          "index": 2,
+          "coefficient_hex": "196b23",
+          "gain_db_relative_to_max": -2.0,
+          "nominal_gain_db_relative_to_max": -2
+        },
+        {
+          "level": 31,
+          "ha_volume_percent": 96.875,
+          "index": 1,
+          "coefficient_hex": "1c8521",
+          "gain_db_relative_to_max": -0.999999,
+          "nominal_gain_db_relative_to_max": -1
+        },
+        {
+          "level": 32,
+          "ha_volume_percent": 100.0,
+          "index": 0,
+          "coefficient_hex": "200000",
+          "gain_db_relative_to_max": 0.0,
+          "nominal_gain_db_relative_to_max": 0
+        }
+      ],
+      "verified_setter_cases": [
+        {
+          "source": "USB",
+          "level": 0,
+          "packets": [
+            "80004a000000",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 1,
+          "packets": [
+            "80004a00049b",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 2,
+          "packets": [
+            "80004a000831",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 3,
+          "packets": [
+            "80004a000e91",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 4,
+          "packets": [
+            "80004a0019e8",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 5,
+          "packets": [
+            "80004a00290f",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 6,
+          "packets": [
+            "80004a004112",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 7,
+          "packets": [
+            "80004a006722",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 8,
+          "packets": [
+            "80004a0091ad",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 9,
+          "packets": [
+            "80004a00cdc6",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 10,
+          "packets": [
+            "80004a0122aa",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 11,
+          "packets": [
+            "80004a016dec",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 12,
+          "packets": [
+            "80004a01ccac",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 13,
+          "packets": [
+            "80004a0243f3",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 14,
+          "packets": [
+            "80004a02da1d",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 15,
+          "packets": [
+            "80004a039728",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 16,
+          "packets": [
+            "80004a048527",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 17,
+          "packets": [
+            "80004a05b0c4",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 18,
+          "packets": [
+            "80004a066254",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 19,
+          "packets": [
+            "80004a0729f6",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 20,
+          "packets": [
+            "80004a0809bd",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 21,
+          "packets": [
+            "80004a0904d2",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 22,
+          "packets": [
+            "80004a0a1e8a",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 23,
+          "packets": [
+            "80004a0b5aa2",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 24,
+          "packets": [
+            "80004a0cbd4b",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 25,
+          "packets": [
+            "80004a0e4b3b",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 26,
+          "packets": [
+            "80004a1009ba",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 27,
+          "packets": [
+            "80004a11feb3",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 28,
+          "packets": [
+            "80004a1430cd",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 29,
+          "packets": [
+            "80004a16a77e",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 30,
+          "packets": [
+            "80004a196b23",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 31,
+          "packets": [
+            "80004a1c8521",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 32,
+          "packets": [
+            "80004a200000",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 0,
+          "packets": [
+            "80004a000000",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 1,
+          "packets": [
+            "80004a00049b",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 2,
+          "packets": [
+            "80004a000831",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 3,
+          "packets": [
+            "80004a000e91",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 4,
+          "packets": [
+            "80004a0019e8",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 5,
+          "packets": [
+            "80004a00290f",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 6,
+          "packets": [
+            "80004a004112",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 7,
+          "packets": [
+            "80004a006722",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 8,
+          "packets": [
+            "80004a0091ad",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 9,
+          "packets": [
+            "80004a00cdc6",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 10,
+          "packets": [
+            "80004a0122aa",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 11,
+          "packets": [
+            "80004a016dec",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 12,
+          "packets": [
+            "80004a01ccac",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 13,
+          "packets": [
+            "80004a0243f3",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 14,
+          "packets": [
+            "80004a02da1d",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 15,
+          "packets": [
+            "80004a039728",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 16,
+          "packets": [
+            "80004a048527",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 17,
+          "packets": [
+            "80004a05b0c4",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 18,
+          "packets": [
+            "80004a066254",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 19,
+          "packets": [
+            "80004a0729f6",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 20,
+          "packets": [
+            "80004a0809bd",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 21,
+          "packets": [
+            "80004a0904d2",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 22,
+          "packets": [
+            "80004a0a1e8a",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 23,
+          "packets": [
+            "80004a0b5aa2",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 24,
+          "packets": [
+            "80004a0cbd4b",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 25,
+          "packets": [
+            "80004a0e4b3b",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 26,
+          "packets": [
+            "80004a1009ba",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 27,
+          "packets": [
+            "80004a11feb3",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 28,
+          "packets": [
+            "80004a1430cd",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 29,
+          "packets": [
+            "80004a16a77e",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 30,
+          "packets": [
+            "80004a196b23",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 31,
+          "packets": [
+            "80004a1c8521",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 32,
+          "packets": [
+            "80004a200000",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 0,
+          "packets": [
+            "80004a000000",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 1,
+          "packets": [
+            "80004a00049b",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 2,
+          "packets": [
+            "80004a000831",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 3,
+          "packets": [
+            "80004a000e91",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 4,
+          "packets": [
+            "80004a0019e8",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 5,
+          "packets": [
+            "80004a00290f",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 6,
+          "packets": [
+            "80004a004112",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 7,
+          "packets": [
+            "80004a006722",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 8,
+          "packets": [
+            "80004a0091ad",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 9,
+          "packets": [
+            "80004a00cdc6",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 10,
+          "packets": [
+            "80004a0122aa",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 11,
+          "packets": [
+            "80004a016dec",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 12,
+          "packets": [
+            "80004a01ccac",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 13,
+          "packets": [
+            "80004a0243f3",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 14,
+          "packets": [
+            "80004a02da1d",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 15,
+          "packets": [
+            "80004a039728",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 16,
+          "packets": [
+            "80004a048527",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 17,
+          "packets": [
+            "80004a05b0c4",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 18,
+          "packets": [
+            "80004a066254",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 19,
+          "packets": [
+            "80004a0729f6",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 20,
+          "packets": [
+            "80004a0809bd",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 21,
+          "packets": [
+            "80004a0904d2",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 22,
+          "packets": [
+            "80004a0a1e8a",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 23,
+          "packets": [
+            "80004a0b5aa2",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 24,
+          "packets": [
+            "80004a0cbd4b",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 25,
+          "packets": [
+            "80004a0e4b3b",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 26,
+          "packets": [
+            "80004a1009ba",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 27,
+          "packets": [
+            "80004a11feb3",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 28,
+          "packets": [
+            "80004a1430cd",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 29,
+          "packets": [
+            "80004a16a77e",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 30,
+          "packets": [
+            "80004a196b23",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 31,
+          "packets": [
+            "80004a1c8521",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 32,
+          "packets": [
+            "80004a200000",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 0,
+          "packets": [
+            "80004a000000",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 1,
+          "packets": [
+            "80004a00049b",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 2,
+          "packets": [
+            "80004a000831",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 3,
+          "packets": [
+            "80004a000e91",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 4,
+          "packets": [
+            "80004a0019e8",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 5,
+          "packets": [
+            "80004a00290f",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 6,
+          "packets": [
+            "80004a004112",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 7,
+          "packets": [
+            "80004a006722",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 8,
+          "packets": [
+            "80004a0091ad",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 9,
+          "packets": [
+            "80004a00cdc6",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 10,
+          "packets": [
+            "80004a0122aa",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 11,
+          "packets": [
+            "80004a016dec",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 12,
+          "packets": [
+            "80004a01ccac",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 13,
+          "packets": [
+            "80004a0243f3",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 14,
+          "packets": [
+            "80004a02da1d",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 15,
+          "packets": [
+            "80004a039728",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 16,
+          "packets": [
+            "80004a048527",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 17,
+          "packets": [
+            "80004a05b0c4",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 18,
+          "packets": [
+            "80004a066254",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 19,
+          "packets": [
+            "80004a0729f6",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 20,
+          "packets": [
+            "80004a0809bd",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 21,
+          "packets": [
+            "80004a0904d2",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 22,
+          "packets": [
+            "80004a0a1e8a",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 23,
+          "packets": [
+            "80004a0b5aa2",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 24,
+          "packets": [
+            "80004a0cbd4b",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 25,
+          "packets": [
+            "80004a0e4b3b",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 26,
+          "packets": [
+            "80004a1009ba",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 27,
+          "packets": [
+            "80004a11feb3",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 28,
+          "packets": [
+            "80004a1430cd",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 29,
+          "packets": [
+            "80004a16a77e",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 30,
+          "packets": [
+            "80004a196b23",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 31,
+          "packets": [
+            "80004a1c8521",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 32,
+          "packets": [
+            "80004a200000",
+            "a50000"
+          ]
+        }
+      ]
+    },
+    "V75": {
+      "file": "PB1000_CR_202101070V75.bin",
+      "sha256": "d7c94ce403afaf784045c56e42e104dfa5f9b51c9cf6f2e4ed2093bd1824e44d",
+      "setter_file_offset": "0x6cf24",
+      "setter_runtime_address": "0x1f3b24",
+      "index_table_runtime_address": "0x34f6b4",
+      "coefficient_table_runtime_address": "0x34f4b8",
+      "levels": [
+        {
+          "level": 0,
+          "ha_volume_percent": 0.0,
+          "index": 71,
+          "coefficient_hex": "000000",
+          "gain_db_relative_to_max": null,
+          "nominal_gain_db_relative_to_max": null
+        },
+        {
+          "level": 1,
+          "ha_volume_percent": 3.125,
+          "index": 65,
+          "coefficient_hex": "00049b",
+          "gain_db_relative_to_max": -65.002322,
+          "nominal_gain_db_relative_to_max": -65
+        },
+        {
+          "level": 2,
+          "ha_volume_percent": 6.25,
+          "index": 60,
+          "coefficient_hex": "000831",
+          "gain_db_relative_to_max": -60.00063,
+          "nominal_gain_db_relative_to_max": -60
+        },
+        {
+          "level": 3,
+          "ha_volume_percent": 9.375,
+          "index": 55,
+          "coefficient_hex": "000e91",
+          "gain_db_relative_to_max": -55.000751,
+          "nominal_gain_db_relative_to_max": -55
+        },
+        {
+          "level": 4,
+          "ha_volume_percent": 12.5,
+          "index": 50,
+          "coefficient_hex": "0019e8",
+          "gain_db_relative_to_max": -49.999708,
+          "nominal_gain_db_relative_to_max": -50
+        },
+        {
+          "level": 5,
+          "ha_volume_percent": 15.625,
+          "index": 46,
+          "coefficient_hex": "00290f",
+          "gain_db_relative_to_max": -45.999717,
+          "nominal_gain_db_relative_to_max": -46
+        },
+        {
+          "level": 6,
+          "ha_volume_percent": 18.75,
+          "index": 42,
+          "coefficient_hex": "004112",
+          "gain_db_relative_to_max": -42.000141,
+          "nominal_gain_db_relative_to_max": -42
+        },
+        {
+          "level": 7,
+          "ha_volume_percent": 21.875,
+          "index": 38,
+          "coefficient_hex": "006722",
+          "gain_db_relative_to_max": -37.999862,
+          "nominal_gain_db_relative_to_max": -38
+        },
+        {
+          "level": 8,
+          "ha_volume_percent": 25.0,
+          "index": 35,
+          "coefficient_hex": "0091ad",
+          "gain_db_relative_to_max": -35.000052,
+          "nominal_gain_db_relative_to_max": -35
+        },
+        {
+          "level": 9,
+          "ha_volume_percent": 28.125,
+          "index": 32,
+          "coefficient_hex": "00cdc6",
+          "gain_db_relative_to_max": -32.000013,
+          "nominal_gain_db_relative_to_max": -32
+        },
+        {
+          "level": 10,
+          "ha_volume_percent": 31.25,
+          "index": 29,
+          "coefficient_hex": "0122aa",
+          "gain_db_relative_to_max": -28.999972,
+          "nominal_gain_db_relative_to_max": -29
+        },
+        {
+          "level": 11,
+          "ha_volume_percent": 34.375,
+          "index": 27,
+          "coefficient_hex": "016dec",
+          "gain_db_relative_to_max": -27.000031,
+          "nominal_gain_db_relative_to_max": -27
+        },
+        {
+          "level": 12,
+          "ha_volume_percent": 37.5,
+          "index": 25,
+          "coefficient_hex": "01ccac",
+          "gain_db_relative_to_max": -24.999965,
+          "nominal_gain_db_relative_to_max": -25
+        },
+        {
+          "level": 13,
+          "ha_volume_percent": 40.625,
+          "index": 23,
+          "coefficient_hex": "0243f3",
+          "gain_db_relative_to_max": -23.0,
+          "nominal_gain_db_relative_to_max": -23
+        },
+        {
+          "level": 14,
+          "ha_volume_percent": 43.75,
+          "index": 21,
+          "coefficient_hex": "02da1d",
+          "gain_db_relative_to_max": -20.999994,
+          "nominal_gain_db_relative_to_max": -21
+        },
+        {
+          "level": 15,
+          "ha_volume_percent": 46.875,
+          "index": 19,
+          "coefficient_hex": "039728",
+          "gain_db_relative_to_max": -19.000012,
+          "nominal_gain_db_relative_to_max": -19
+        },
+        {
+          "level": 16,
+          "ha_volume_percent": 50.0,
+          "index": 17,
+          "coefficient_hex": "048527",
+          "gain_db_relative_to_max": -16.999988,
+          "nominal_gain_db_relative_to_max": -17
+        },
+        {
+          "level": 17,
+          "ha_volume_percent": 53.125,
+          "index": 15,
+          "coefficient_hex": "05b0c4",
+          "gain_db_relative_to_max": -15.000005,
+          "nominal_gain_db_relative_to_max": -15
+        },
+        {
+          "level": 18,
+          "ha_volume_percent": 56.25,
+          "index": 14,
+          "coefficient_hex": "066254",
+          "gain_db_relative_to_max": -14.001014,
+          "nominal_gain_db_relative_to_max": -14
+        },
+        {
+          "level": 19,
+          "ha_volume_percent": 59.375,
+          "index": 13,
+          "coefficient_hex": "0729f6",
+          "gain_db_relative_to_max": -12.999997,
+          "nominal_gain_db_relative_to_max": -13
+        },
+        {
+          "level": 20,
+          "ha_volume_percent": 62.5,
+          "index": 12,
+          "coefficient_hex": "0809bd",
+          "gain_db_relative_to_max": -11.999996,
+          "nominal_gain_db_relative_to_max": -12
+        },
+        {
+          "level": 21,
+          "ha_volume_percent": 65.625,
+          "index": 11,
+          "coefficient_hex": "0904d2",
+          "gain_db_relative_to_max": -10.999996,
+          "nominal_gain_db_relative_to_max": -11
+        },
+        {
+          "level": 22,
+          "ha_volume_percent": 68.75,
+          "index": 10,
+          "coefficient_hex": "0a1e8a",
+          "gain_db_relative_to_max": -9.999996,
+          "nominal_gain_db_relative_to_max": -10
+        },
+        {
+          "level": 23,
+          "ha_volume_percent": 71.875,
+          "index": 9,
+          "coefficient_hex": "0b5aa2",
+          "gain_db_relative_to_max": -8.999995,
+          "nominal_gain_db_relative_to_max": -9
+        },
+        {
+          "level": 24,
+          "ha_volume_percent": 75.0,
+          "index": 8,
+          "coefficient_hex": "0cbd4b",
+          "gain_db_relative_to_max": -8.000003,
+          "nominal_gain_db_relative_to_max": -8
+        },
+        {
+          "level": 25,
+          "ha_volume_percent": 78.125,
+          "index": 7,
+          "coefficient_hex": "0e4b3b",
+          "gain_db_relative_to_max": -7.000004,
+          "nominal_gain_db_relative_to_max": -7
+        },
+        {
+          "level": 26,
+          "ha_volume_percent": 81.25,
+          "index": 6,
+          "coefficient_hex": "1009ba",
+          "gain_db_relative_to_max": -5.999998,
+          "nominal_gain_db_relative_to_max": -6
+        },
+        {
+          "level": 27,
+          "ha_volume_percent": 84.375,
+          "index": 5,
+          "coefficient_hex": "11feb3",
+          "gain_db_relative_to_max": -5.000002,
+          "nominal_gain_db_relative_to_max": -5
+        },
+        {
+          "level": 28,
+          "ha_volume_percent": 87.5,
+          "index": 4,
+          "coefficient_hex": "1430cd",
+          "gain_db_relative_to_max": -4.000003,
+          "nominal_gain_db_relative_to_max": -4
+        },
+        {
+          "level": 29,
+          "ha_volume_percent": 90.625,
+          "index": 3,
+          "coefficient_hex": "16a77e",
+          "gain_db_relative_to_max": -3.0,
+          "nominal_gain_db_relative_to_max": -3
+        },
+        {
+          "level": 30,
+          "ha_volume_percent": 93.75,
+          "index": 2,
+          "coefficient_hex": "196b23",
+          "gain_db_relative_to_max": -2.0,
+          "nominal_gain_db_relative_to_max": -2
+        },
+        {
+          "level": 31,
+          "ha_volume_percent": 96.875,
+          "index": 1,
+          "coefficient_hex": "1c8521",
+          "gain_db_relative_to_max": -0.999999,
+          "nominal_gain_db_relative_to_max": -1
+        },
+        {
+          "level": 32,
+          "ha_volume_percent": 100.0,
+          "index": 0,
+          "coefficient_hex": "200000",
+          "gain_db_relative_to_max": 0.0,
+          "nominal_gain_db_relative_to_max": 0
+        }
+      ],
+      "verified_setter_cases": [
+        {
+          "source": "USB",
+          "level": 0,
+          "packets": [
+            "80004a000000",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 1,
+          "packets": [
+            "80004a00049b",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 2,
+          "packets": [
+            "80004a000831",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 3,
+          "packets": [
+            "80004a000e91",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 4,
+          "packets": [
+            "80004a0019e8",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 5,
+          "packets": [
+            "80004a00290f",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 6,
+          "packets": [
+            "80004a004112",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 7,
+          "packets": [
+            "80004a006722",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 8,
+          "packets": [
+            "80004a0091ad",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 9,
+          "packets": [
+            "80004a00cdc6",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 10,
+          "packets": [
+            "80004a0122aa",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 11,
+          "packets": [
+            "80004a016dec",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 12,
+          "packets": [
+            "80004a01ccac",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 13,
+          "packets": [
+            "80004a0243f3",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 14,
+          "packets": [
+            "80004a02da1d",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 15,
+          "packets": [
+            "80004a039728",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 16,
+          "packets": [
+            "80004a048527",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 17,
+          "packets": [
+            "80004a05b0c4",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 18,
+          "packets": [
+            "80004a066254",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 19,
+          "packets": [
+            "80004a0729f6",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 20,
+          "packets": [
+            "80004a0809bd",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 21,
+          "packets": [
+            "80004a0904d2",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 22,
+          "packets": [
+            "80004a0a1e8a",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 23,
+          "packets": [
+            "80004a0b5aa2",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 24,
+          "packets": [
+            "80004a0cbd4b",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 25,
+          "packets": [
+            "80004a0e4b3b",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 26,
+          "packets": [
+            "80004a1009ba",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 27,
+          "packets": [
+            "80004a11feb3",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 28,
+          "packets": [
+            "80004a1430cd",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 29,
+          "packets": [
+            "80004a16a77e",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 30,
+          "packets": [
+            "80004a196b23",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 31,
+          "packets": [
+            "80004a1c8521",
+            "a50000"
+          ]
+        },
+        {
+          "source": "USB",
+          "level": 32,
+          "packets": [
+            "80004a200000",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 0,
+          "packets": [
+            "80004a000000",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 1,
+          "packets": [
+            "80004a00049b",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 2,
+          "packets": [
+            "80004a000831",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 3,
+          "packets": [
+            "80004a000e91",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 4,
+          "packets": [
+            "80004a0019e8",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 5,
+          "packets": [
+            "80004a00290f",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 6,
+          "packets": [
+            "80004a004112",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 7,
+          "packets": [
+            "80004a006722",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 8,
+          "packets": [
+            "80004a0091ad",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 9,
+          "packets": [
+            "80004a00cdc6",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 10,
+          "packets": [
+            "80004a0122aa",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 11,
+          "packets": [
+            "80004a016dec",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 12,
+          "packets": [
+            "80004a01ccac",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 13,
+          "packets": [
+            "80004a0243f3",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 14,
+          "packets": [
+            "80004a02da1d",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 15,
+          "packets": [
+            "80004a039728",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 16,
+          "packets": [
+            "80004a048527",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 17,
+          "packets": [
+            "80004a05b0c4",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 18,
+          "packets": [
+            "80004a066254",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 19,
+          "packets": [
+            "80004a0729f6",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 20,
+          "packets": [
+            "80004a0809bd",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 21,
+          "packets": [
+            "80004a0904d2",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 22,
+          "packets": [
+            "80004a0a1e8a",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 23,
+          "packets": [
+            "80004a0b5aa2",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 24,
+          "packets": [
+            "80004a0cbd4b",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 25,
+          "packets": [
+            "80004a0e4b3b",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 26,
+          "packets": [
+            "80004a1009ba",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 27,
+          "packets": [
+            "80004a11feb3",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 28,
+          "packets": [
+            "80004a1430cd",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 29,
+          "packets": [
+            "80004a16a77e",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 30,
+          "packets": [
+            "80004a196b23",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 31,
+          "packets": [
+            "80004a1c8521",
+            "a50000"
+          ]
+        },
+        {
+          "source": "LINE IN",
+          "level": 32,
+          "packets": [
+            "80004a200000",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 0,
+          "packets": [
+            "80004a000000",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 1,
+          "packets": [
+            "80004a00049b",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 2,
+          "packets": [
+            "80004a000831",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 3,
+          "packets": [
+            "80004a000e91",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 4,
+          "packets": [
+            "80004a0019e8",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 5,
+          "packets": [
+            "80004a00290f",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 6,
+          "packets": [
+            "80004a004112",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 7,
+          "packets": [
+            "80004a006722",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 8,
+          "packets": [
+            "80004a0091ad",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 9,
+          "packets": [
+            "80004a00cdc6",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 10,
+          "packets": [
+            "80004a0122aa",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 11,
+          "packets": [
+            "80004a016dec",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 12,
+          "packets": [
+            "80004a01ccac",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 13,
+          "packets": [
+            "80004a0243f3",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 14,
+          "packets": [
+            "80004a02da1d",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 15,
+          "packets": [
+            "80004a039728",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 16,
+          "packets": [
+            "80004a048527",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 17,
+          "packets": [
+            "80004a05b0c4",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 18,
+          "packets": [
+            "80004a066254",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 19,
+          "packets": [
+            "80004a0729f6",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 20,
+          "packets": [
+            "80004a0809bd",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 21,
+          "packets": [
+            "80004a0904d2",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 22,
+          "packets": [
+            "80004a0a1e8a",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 23,
+          "packets": [
+            "80004a0b5aa2",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 24,
+          "packets": [
+            "80004a0cbd4b",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 25,
+          "packets": [
+            "80004a0e4b3b",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 26,
+          "packets": [
+            "80004a1009ba",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 27,
+          "packets": [
+            "80004a11feb3",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 28,
+          "packets": [
+            "80004a1430cd",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 29,
+          "packets": [
+            "80004a16a77e",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 30,
+          "packets": [
+            "80004a196b23",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 31,
+          "packets": [
+            "80004a1c8521",
+            "a50000"
+          ]
+        },
+        {
+          "source": "AUX",
+          "level": 32,
+          "packets": [
+            "80004a200000",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 0,
+          "packets": [
+            "80004a000000",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 1,
+          "packets": [
+            "80004a00049b",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 2,
+          "packets": [
+            "80004a000831",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 3,
+          "packets": [
+            "80004a000e91",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 4,
+          "packets": [
+            "80004a0019e8",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 5,
+          "packets": [
+            "80004a00290f",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 6,
+          "packets": [
+            "80004a004112",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 7,
+          "packets": [
+            "80004a006722",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 8,
+          "packets": [
+            "80004a0091ad",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 9,
+          "packets": [
+            "80004a00cdc6",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 10,
+          "packets": [
+            "80004a0122aa",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 11,
+          "packets": [
+            "80004a016dec",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 12,
+          "packets": [
+            "80004a01ccac",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 13,
+          "packets": [
+            "80004a0243f3",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 14,
+          "packets": [
+            "80004a02da1d",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 15,
+          "packets": [
+            "80004a039728",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 16,
+          "packets": [
+            "80004a048527",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 17,
+          "packets": [
+            "80004a05b0c4",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 18,
+          "packets": [
+            "80004a066254",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 19,
+          "packets": [
+            "80004a0729f6",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 20,
+          "packets": [
+            "80004a0809bd",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 21,
+          "packets": [
+            "80004a0904d2",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 22,
+          "packets": [
+            "80004a0a1e8a",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 23,
+          "packets": [
+            "80004a0b5aa2",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 24,
+          "packets": [
+            "80004a0cbd4b",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 25,
+          "packets": [
+            "80004a0e4b3b",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 26,
+          "packets": [
+            "80004a1009ba",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 27,
+          "packets": [
+            "80004a11feb3",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 28,
+          "packets": [
+            "80004a1430cd",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 29,
+          "packets": [
+            "80004a16a77e",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 30,
+          "packets": [
+            "80004a196b23",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 31,
+          "packets": [
+            "80004a1c8521",
+            "a50000"
+          ]
+        },
+        {
+          "source": "Bluetooth",
+          "level": 32,
+          "packets": [
+            "80004a200000",
+            "a50000"
+          ]
+        }
+      ]
+    }
+  }
+}
