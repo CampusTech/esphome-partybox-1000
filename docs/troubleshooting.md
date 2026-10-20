@@ -18,6 +18,12 @@ connect without completing TWS admission. It is not a guaranteed recovery button
 EIR/class controller readback in logs describes the ESP's advertised identity,
 not proof that the JBL discovered or accepted it.
 
+For a previously paired speaker, a **single short press** of its Bluetooth button
+has also restored TWS and SPP after repeated unsuccessful five-second holds.
+This is an observed recovery option, not a guaranteed way to start a fresh TWS
+pairing. Verify both link diagnostics and incoming TWS reports; a chime alone
+does not identify which device connected.
+
 ## Controls stay visible but do nothing
 
 Check TWS/SPP connection, field confidence, power estimate and Last command.
