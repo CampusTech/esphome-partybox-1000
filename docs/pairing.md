@@ -44,6 +44,12 @@ TWS join; there is no live handoff. No-op address edits do not restart.
 4. Wait for **TWS connected** and **SPP connected** in Home Assistant. A chime may accompany TWS admission; the link entities are a better check. Ordinary Bluetooth audio pairing alone does not establish TWS.
 5. Play music on the selected input at a comfortable level. Check one volume change, mute/unmute and input selection. Test Standby/Wake while watching the power indicator.
 
+When several **disconnected ESP32 bridges** are powered, a searching JBL can
+choose the wrong bridge, which rejects its address. A chime alone does not prove
+that the intended bridge joined. If this happens, temporarily unplug the other
+disconnected bridges, pair one JBL and verify both link sensors, then power and
+pair the next bridge. Already connected bridges can remain powered.
+
 After a full power-off, factory reset or ESP32 reboot, you may need to repeat the five-second Bluetooth hold. **Connect Bluetooth** attempts an ordinary A2DP connection; it cannot force the JBL into TWS search. Do not factory-reset a speaker as the first troubleshooting step.
 
 A retained TWS session can request orange-light standby and wake. Dark, fully powered-off speakers are not remotely wakeable through this integration. Power state is an estimate, and command acknowledgements are not proof of a physical effect.
