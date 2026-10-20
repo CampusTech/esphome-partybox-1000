@@ -151,7 +151,7 @@ def main():
                     check=True,
                 )
                 subprocess.run([str(binary)], check=True)
-        for name in ("test_hook.py", "test_runtime.py"):
+        for name in ("test_headers.py", "test_hook.py", "test_runtime.py"):
             subprocess.run(
                 [sys.executable, str(ROOT / "tests/partybox" / name)], check=True
             )
