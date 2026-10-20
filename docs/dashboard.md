@@ -15,6 +15,12 @@ again unmutes every member. If only some speakers are muted, it first mutes all.
 It leaves each speaker's volume level intact. Its indicator follows the mute
 values reported by the component, including their existing confidence limits.
 
+The **All speakers** selectors beneath the mixer apply bass boost or lighting to
+every member. They show the shared setting when all members agree, or **Mixed**
+when settings differ or a member's value is unknown. Choose a concrete setting
+to synchronize the group; choosing Mixed sends no command. Individual speaker
+selectors remain available below.
+
 ## Setup
 
 1. In **Settings → Devices & services → Helpers → Create helper → Group →
@@ -24,9 +30,11 @@ values reported by the component, including their existing confidence limits.
 2. Add [the master helpers](../examples/dashboard-master-volume.yaml) to Home
    Assistant's `configuration.yaml`, merging its `template` list with any existing
    one. Reload Template entities after checking the configuration. Alternatively,
-   create **Template → Number** and **Template → Switch** helpers with the same
-   settings. The expected entities are `number.office_partyboxes_volume` and
-   `switch.office_partyboxes_audio` (switch on means audio enabled). The number
+   create **Template → Number**, **Template → Switch** and two **Template → Select**
+   helpers with the same settings. The expected entities are
+   `number.office_partyboxes_volume`, `switch.office_partyboxes_audio` (switch on
+   means audio enabled), `select.office_partyboxes_bass_boost` and
+   `select.office_partyboxes_lighting`. The number
    helper is needed because the native
    media-player group forwards volume commands but does not expose volume
    readback.

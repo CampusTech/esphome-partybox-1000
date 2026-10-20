@@ -38,6 +38,16 @@ views:
           {{ ns.faders }}
       grid_options:
         columns: full
+    - type: entities
+      title: All speakers
+      show_header_toggle: false
+      entities:
+      - entity: select.office_partyboxes_bass_boost
+        name: Bass boost
+      - entity: select.office_partyboxes_lighting
+        name: Lighting
+      grid_options:
+        columns: full
     - type: heading
       heading: Speaker controls
       heading_style: subtitle

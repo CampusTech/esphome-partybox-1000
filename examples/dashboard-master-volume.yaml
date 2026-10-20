@@ -50,3 +50,72 @@ template:
               entity_id: media_player.office_partyboxes
             data:
               volume_level: "{{ value }}"
+  - select:
+    - name: Office PartyBoxes bass boost
+      options: '{{ ["Mixed","Off","Level 1","Level 2"] }}'
+      state: |-
+        {% set ns = namespace(ids=[]) %}
+        {% for player in state_attr('media_player.office_partyboxes', 'entity_id') or [] %}
+          {% set prefix = player | replace('media_player.', '') | regex_replace('_player$', '') %}
+          {% set ns.ids = ns.ids + ['select.' ~ prefix ~ '_bass_boost'] %}
+        {% endfor %}
+        {% set values = ns.ids | map('states') | unique | list %}
+        {{ values[0] if values | count == 1 and values[0] in ["Off","Level 1","Level 2"] else 'Mixed' }}
+      select_option:
+      - if:
+        - condition: template
+          value_template: '{{ option != ''Mixed'' }}'
+        then:
+        - action: select.select_option
+          target:
+            entity_id: |-
+              {% set ns = namespace(ids=[]) %}
+              {% for player in state_attr('media_player.office_partyboxes', 'entity_id') or [] %}
+                {% set prefix = player | replace('media_player.', '') | regex_replace('_player$', '') %}
+                {% set ns.ids = ns.ids + ['select.' ~ prefix ~ '_bass_boost'] %}
+              {% endfor %}
+              {{ ns.ids }}
+          data:
+            option: '{{ option }}'
+      unique_id: office_partyboxes_bass_boost
+      availability: |-
+        {% set ns = namespace(ids=[]) %}
+        {% for player in state_attr('media_player.office_partyboxes', 'entity_id') or [] %}
+          {% set prefix = player | replace('media_player.', '') | regex_replace('_player$', '') %}
+          {% set ns.ids = ns.ids + ['select.' ~ prefix ~ '_bass_boost'] %}
+        {% endfor %}
+        {{ expand(ns.ids) | rejectattr('state', 'in', ['unavailable', 'unknown']) | list | count > 0 }}
+    - name: Office PartyBoxes lighting
+      options: '{{ ["Mixed","Off","Pattern 1","Pattern 2","Pattern 3","Pattern 4"] }}'
+      state: |-
+        {% set ns = namespace(ids=[]) %}
+        {% for player in state_attr('media_player.office_partyboxes', 'entity_id') or [] %}
+          {% set prefix = player | replace('media_player.', '') | regex_replace('_player$', '') %}
+          {% set ns.ids = ns.ids + ['select.' ~ prefix ~ '_lighting'] %}
+        {% endfor %}
+        {% set values = ns.ids | map('states') | unique | list %}
+        {{ values[0] if values | count == 1 and values[0] in ["Off","Pattern 1","Pattern 2","Pattern 3","Pattern 4"] else 'Mixed' }}
+      select_option:
+      - if:
+        - condition: template
+          value_template: '{{ option != ''Mixed'' }}'
+        then:
+        - action: select.select_option
+          target:
+            entity_id: |-
+              {% set ns = namespace(ids=[]) %}
+              {% for player in state_attr('media_player.office_partyboxes', 'entity_id') or [] %}
+                {% set prefix = player | replace('media_player.', '') | regex_replace('_player$', '') %}
+                {% set ns.ids = ns.ids + ['select.' ~ prefix ~ '_lighting'] %}
+              {% endfor %}
+              {{ ns.ids }}
+          data:
+            option: '{{ option }}'
+      unique_id: office_partyboxes_lighting
+      availability: |-
+        {% set ns = namespace(ids=[]) %}
+        {% for player in state_attr('media_player.office_partyboxes', 'entity_id') or [] %}
+          {% set prefix = player | replace('media_player.', '') | regex_replace('_player$', '') %}
+          {% set ns.ids = ns.ids + ['select.' ~ prefix ~ '_lighting'] %}
+        {% endfor %}
+        {{ expand(ns.ids) | rejectattr('state', 'in', ['unavailable', 'unknown']) | list | count > 0 }}
