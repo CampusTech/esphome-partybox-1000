@@ -42,6 +42,16 @@ views:
       title: All speakers
       show_header_toggle: false
       entities:
+      - type: button
+        entity: media_player.office_partyboxes
+        name: Power
+        icon: mdi:power
+        action_name: Standby / wake
+        tap_action:
+          action: perform-action
+          perform_action: media_player.toggle
+          target:
+            entity_id: media_player.office_partyboxes
       - entity: select.office_partyboxes_bass_boost
         name: Bass boost
       - entity: select.office_partyboxes_lighting

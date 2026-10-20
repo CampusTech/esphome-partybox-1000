@@ -21,6 +21,13 @@ when settings differ or a member's value is unknown. Choose a concrete setting
 to synchronize the group; choosing Mixed sends no command. Individual speaker
 selectors remain available below.
 
+The **Power → Standby / wake** button toggles the PartyBox group: when the group
+is on, it requests standby for its members; when all members report off, it
+requests wake. It uses the players' existing power estimates and command guards,
+and sends no volume, mute or Tesira commands. Unknown power or a lost TWS
+link can prevent a member from responding. A fully powered-off speaker still
+requires physical power-on; this is networked standby/wake.
+
 ## Setup
 
 1. In **Settings → Devices & services → Helpers → Create helper → Group →
