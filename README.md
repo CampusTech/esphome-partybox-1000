@@ -6,6 +6,12 @@ Bluetooth TWS session and uses SPP for input selection and firmware queries.
 No speaker modification, speaker firmware flash, MQTT broker or audio wiring
 is required. Use one ESP32 per speaker.
 
+**TWS limitation:** The ESP32 acts as a second speaker and occupies the JBL's
+TWS connection. While using this project, that JBL cannot also pair with another
+physical speaker over TWS for wireless stereo or audio sharing. Multiple JBLs
+can still be controlled together through Home Assistant, each with its own
+ESP32 and audio feed.
+
 **Beta.** Tested with speaker software `75/32/17/15/7`, ESPHome **2026.9.1**
 and ESP-IDF **5.5.5**. Keep these versions pinned: the component hooks internal
 Bluetooth stack functions. ESP32-WROOM-32/32E and ESP32-PICO-D4 support the
