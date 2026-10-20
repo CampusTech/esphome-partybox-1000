@@ -4,6 +4,59 @@
 #include <iostream>
 using namespace esphome::partybox;
 int main() {
+  State input_flags;
+  // A TWS silence mask is useful as per-input reported flags even when the
+  // selected input has not been independently confirmed.
+  assert(input_flags.decode(0x000D0014, 1));
+  assert(input_flags.activity.quality == Quality::UNKNOWN);
+  for (unsigned mask = 0; mask < 16; ++mask) {
+    State flags;
+    assert(flags.decode((mask << 16) | 0x14, 10 + mask));
+    assert(flags.activity.quality == Quality::UNKNOWN);
+    for (unsigned bit = 0; bit < 4; ++bit) {
+      assert(flags.input_signals[bit].quality == Quality::OBSERVED);
+      assert(flags.input_signals[bit].value == !(mask & (1U << bit)));
+      assert(flags.input_signals[bit].at == 10 + mask);
+    }
+    flags.assume(Field::SOURCE, 9, flags.source.revision, 30);
+    assert(flags.decode((mask << 16) | 0x14, 31));
+    assert(flags.activity.quality == Quality::UNKNOWN);  // assumed source is not selected-source evidence
+    flags.begin_source_change();
+    for (const auto& signal : flags.input_signals) assert(signal.quality == Quality::UNKNOWN);
+    assert(flags.decode((mask << 16) | 0x14, 32));
+    flags.assume(Field::SOURCE, 6, flags.source.revision, 33);
+    for (const auto& signal : flags.input_signals) assert(signal.quality == Quality::OBSERVED);
+    flags.disconnect();
+    for (const auto& signal : flags.input_signals) assert(signal.quality == Quality::UNKNOWN);
+    assert(flags.decode((mask << 16) | 0x14, 34));
+    flags.assume(Field::POWER, 0, flags.power.revision, 35);
+    for (const auto& signal : flags.input_signals) assert(signal.quality == Quality::UNKNOWN);
+    assert(flags.decode((mask << 16) | 0x14, 36));
+    assert(flags.decode(0x00020013, 37));
+    for (const auto& signal : flags.input_signals) assert(signal.quality == Quality::UNKNOWN);
+    for (int src : {6, 9, 15, 13}) {
+      State selected;
+      selected.source.set(src, Quality::OBSERVED, 40);
+      assert(selected.decode((mask << 16) | 0x14, 41));
+      if (src == 13) {
+        assert(selected.activity.quality == Quality::UNKNOWN);  // Bluetooth bit is not playback status
+      } else {
+        const unsigned bit = src == 6 ? 0 : src == 9 ? 1 : 2;
+        assert(selected.activity.quality == Quality::OBSERVED);
+        assert(selected.activity.value == !(mask & (1U << bit)));
+      }
+    }
+  }
+  State transitions;
+  assert(transitions.decode(0x090B1244, 1));
+  assert(transitions.decode(0x000D0014, 2));
+  assert(transitions.decode(0x090B0005, 3));
+  assert(transitions.input_signals[1].quality == Quality::OBSERVED);  // same source preserves flags
+  assert(transitions.decode(0x060B0005, 4));
+  for (const auto& signal : transitions.input_signals) assert(signal.quality == Quality::UNKNOWN);
+  assert(transitions.decode(0x000D0014, 5));
+  assert(transitions.decode(0x060B1244, 6));
+  for (const auto& signal : transitions.input_signals) assert(signal.quality == Quality::UNKNOWN);
   State s;
   assert(s.volume.quality == Quality::UNKNOWN);
   assert(!s.decode(0x09211244, 10));  // invalid volume, no partial snapshot
@@ -14,7 +67,8 @@ int main() {
   assert(s.decode(0x00010014, 30) && s.activity.quality == Quality::OBSERVED && s.activity.value);
   s.begin_source_change();
   assert(s.source.quality == Quality::UNKNOWN && s.activity.quality == Quality::UNKNOWN);
-  assert(!s.decode(0x00010014, 35));  // pending source must not reuse old detector mask
+  assert(s.decode(0x00010014, 35));  // raw report is useful while source attribution is pending
+  assert(s.activity.quality == Quality::UNKNOWN);
   auto rev = s.source.revision;
   s.assume(Field::SOURCE, 6, rev, 40);
   assert(s.source.quality == Quality::ASSUMED && s.activity.quality == Quality::UNKNOWN);

@@ -74,6 +74,10 @@ BINARIES = [
     "signal_activity",
     "smart_dj",
     "voice_cancel",
+    "aux_signal",
+    "line_in_signal",
+    "usb_signal",
+    "bluetooth_signal",
 ]
 TEXTS = [
     "volume_confidence",
@@ -117,6 +121,10 @@ DEFAULT_NAMES = {
     "signal_activity": "Selected input signal",
     "smart_dj": "Smart DJ reported",
     "voice_cancel": "Voice cancel reported",
+    "aux_signal": "AUX reported signal",
+    "line_in_signal": "LINE IN reported signal",
+    "usb_signal": "USB reported signal",
+    "bluetooth_signal": "Bluetooth reported signal",
     "volume_confidence": "Volume confidence",
     "mute_confidence": "Mute confidence",
     "source_confidence": "Source confidence",

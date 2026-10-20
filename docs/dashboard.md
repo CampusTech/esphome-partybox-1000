@@ -61,11 +61,14 @@ The controls template expects the component's default entity naming pattern:
 `select.<node>_bass_boost`, `select.<node>_lighting`,
 `button.<node>_wake`, `button.<node>_standby`, and the corresponding
 `binary_sensor.<node>_tws_connected`, `_spp_connected`, and
-`_selected_input_signal` entities. If you renamed entity IDs independently,
+`_aux_reported_signal`, `_line_in_reported_signal`, `_usb_reported_signal` and
+`_bluetooth_reported_signal` entities. If you renamed entity IDs independently,
 adjust the template's suffixes or add an explicit mapping. Display names can be
 changed freely.
 
 On smaller screens, swipe the mixer horizontally to reach additional faders.
 Speaker controls use one, two or three columns depending on screen width.
-**Input signal** reports selected-input electrical activity, not audible music;
+**Input signals (last report)** shows the four TWS mask flags independently.
+Inactive-input flags may be stale, and the Bluetooth flag does not establish
+streaming. These are electrical/protocol indicators, not audible music detectors;
 unknown values and the component's existing state-confidence limits still apply.

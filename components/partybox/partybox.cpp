@@ -963,8 +963,10 @@ void PartyBox::publish_() {
     if (sensors_[i]) sensors_[i]->publish_state(values[i]);
   if (binaries_[0]) binaries_[0]->publish_state(tws_);
   if (binaries_[1]) binaries_[1]->publish_state(bool(spp_handle_) && !spp_poisoned_);
-  const Value<bool>* binary_values[] = {&state_.activity, &state_.smart_dj, &state_.voice_cancel};
-  for (unsigned i = 0; i < 3; i++)
+  const Value<bool>* binary_values[] = {&state_.activity,         &state_.smart_dj,         &state_.voice_cancel,
+                                        &state_.input_signals[0], &state_.input_signals[1], &state_.input_signals[2],
+                                        &state_.input_signals[3]};
+  for (unsigned i = 0; i < 7; i++)
     if (binaries_[i + 2]) {
       if (binary_values[i]->quality != Quality::UNKNOWN)
         binaries_[i + 2]->publish_state(binary_values[i]->value);

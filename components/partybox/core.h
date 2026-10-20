@@ -54,6 +54,9 @@ inline bool valid_command(const Command& c) {
 struct State {
   Value<int> volume, source, bass, lighting;
   Value<bool> mute, power, activity, lighting_flag, smart_dj, voice_cancel;
+  // Last reported active-low detector flags: AUX, LINE IN, USB, Bluetooth.
+  // Inactive inputs may not be refreshed; the Bluetooth flag is not playback status.
+  std::array<Value<bool>, 4> input_signals;
   uint32_t revision(Field f) const {
     switch (f) {
       case Field::VOLUME:
@@ -72,9 +75,13 @@ struct State {
         return 0;
     }
   }
+  void invalidate_input_signals() {
+    for (auto& signal : input_signals) signal.invalidate();
+  }
   void begin_source_change() {
     source.invalidate();
     activity.invalidate();
+    invalidate_input_signals();
   }
   void disconnect() {
     volume.invalidate();
@@ -87,12 +94,14 @@ struct State {
     lighting_flag.invalidate();
     smart_dj.invalidate();
     voice_cancel.invalidate();
+    invalidate_input_signals();
   }
   bool decode(uint32_t word, uint32_t now) {
     const auto v = int((word >> 16) & 255), src = int(word >> 24);
     switch (word & 31) {
       case 4:
         if (!valid_source(src) || v > 32 || ((word >> 9) & 3) > 2 || ((word >> 12) & 7) > 4) return false;
+        invalidate_input_signals();
         source.set(src, Quality::OBSERVED, now);
         volume.set(v, Quality::OBSERVED, now);
         mute.set(bool(word & 0x100), Quality::OBSERVED, now);
@@ -106,6 +115,7 @@ struct State {
       case 5:
         if (!valid_source(src) || v > 32) return false;
         if (source.quality == Quality::UNKNOWN || source.value != src) activity.invalidate();
+        if (source.quality != Quality::UNKNOWN && source.value != src) invalidate_input_signals();
         source.set(src, Quality::OBSERVED, now);
         volume.set(v, Quality::OBSERVED, now);
         return true;
@@ -139,9 +149,12 @@ struct State {
         // A power synchronization request is evidence of a transition, not a hardware getter.
         power.set(v == 2, Quality::ASSUMED, now);
         activity.invalidate();
+        invalidate_input_signals();
         return true;
       case 20: {
-        if (source.quality != Quality::OBSERVED || source.value == 13) return false;
+        for (unsigned bit = 0; bit < input_signals.size(); ++bit)
+          input_signals[bit].set(!(v & (1U << bit)), Quality::OBSERVED, now);
+        if (source.quality != Quality::OBSERVED || source.value == 13) return true;
         const unsigned bit = source.value == 6 ? 1 : source.value == 9 ? 2 : 4;
         activity.set(!(v & bit), Quality::OBSERVED, now);
         return true;
@@ -162,6 +175,7 @@ struct State {
       case Field::SOURCE:
         source.set(v, Quality::ASSUMED, now);
         activity.invalidate();
+        // begin_source_change cleared old flags; preserve a fresh report received before this ACK.
         break;
       case Field::BASS:
         bass.set(v, Quality::ASSUMED, now);
@@ -172,6 +186,7 @@ struct State {
       case Field::POWER:
         power.set(v, Quality::ASSUMED, now);
         activity.invalidate();
+        invalidate_input_signals();
         break;
       default:
         break;

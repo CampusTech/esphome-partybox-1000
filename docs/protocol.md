@@ -121,6 +121,19 @@ unknown until a fresh source report and activity mask arrive. Neither signal
 presence nor an SBC byte counter proves audible output, playback metadata or
 music recognition. A muted or zero-volume input may still carry electrical signal.
 
+Four separate entities expose the **last reported** mask bits without claiming
+which input is selected: `aux_signal`, `line_in_signal`, `usb_signal` and
+`bluetooth_signal`. Their default names end in **reported signal**. They decode
+active-low bits 0–3 even when selected-source confidence is only assumed or
+unknown. They do not relax the existing selected-input sensor's guard.
+
+These flags describe the received mask, not simultaneous live monitoring of all
+four inputs. Tests showed inactive inputs may retain old detector flags; the
+Bluetooth bit was also seen asserted without a connected audio source. Treat
+that bit as a protocol flag, not Bluetooth playback status. The new entities
+start unknown and are cleared across connection, source-change and power gaps
+until another mask arrives. No polling or additional Bluetooth traffic is added.
+
 ## SPP frames
 
 Requests begin `BA`, replies `BB`; byte 1 is total frame length. The implemented

@@ -91,6 +91,7 @@ class LightState { public: int calls{0}; LightCall make_call() { ++calls; return
         "physical_report_wins",
         "ha_unknown_state_compatibility",
         "protocol_entity_invalidation",
+        "input_signal_flags",
         "radio_eir_summary",
         "a2dp_telemetry",
         "spp_disabled",
@@ -103,7 +104,7 @@ class LightState { public: int calls{0}; LightCall make_call() { ++calls; return
         "native_tx_failure",
         "explicit_connect_failure",
     ]:
-        if subprocess.run([str(exe), case]).returncode:
+        if subprocess.run([str(exe), case], check=False).returncode:
             failures.append(case)
     if failures:
         raise SystemExit("FAILED runtime regressions: " + ", ".join(failures))

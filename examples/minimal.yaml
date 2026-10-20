@@ -16,6 +16,10 @@ partybox:
   wake: false
   query_version: false
   signal_activity: false
+  aux_signal: false
+  line_in_signal: false
+  usb_signal: false
+  bluetooth_signal: false
   smart_dj: false
   voice_cancel: false
   volume_steps: false

@@ -83,7 +83,11 @@ views:
               dict(type='section', label='Connection'),
               dict(entity='binary_sensor.' ~ prefix ~ '_tws_connected', name='TWS control'),
               dict(entity='binary_sensor.' ~ prefix ~ '_spp_connected', name='Input control'),
-              dict(entity='binary_sensor.' ~ prefix ~ '_selected_input_signal', name='Input signal')
+              dict(type='section', label='Input signals (last report)'),
+              dict(entity='binary_sensor.' ~ prefix ~ '_aux_reported_signal', name='AUX'),
+              dict(entity='binary_sensor.' ~ prefix ~ '_line_in_reported_signal', name='LINE IN'),
+              dict(entity='binary_sensor.' ~ prefix ~ '_usb_reported_signal', name='USB'),
+              dict(entity='binary_sensor.' ~ prefix ~ '_bluetooth_reported_signal', name='Bluetooth flag')
             ])] %}
           {% endfor %}
           {{ ns.cards }}
@@ -114,7 +118,11 @@ views:
               dict(type='section', label='Connection'),
               dict(entity='binary_sensor.' ~ prefix ~ '_tws_connected', name='TWS control'),
               dict(entity='binary_sensor.' ~ prefix ~ '_spp_connected', name='Input control'),
-              dict(entity='binary_sensor.' ~ prefix ~ '_selected_input_signal', name='Input signal')
+              dict(type='section', label='Input signals (last report)'),
+              dict(entity='binary_sensor.' ~ prefix ~ '_aux_reported_signal', name='AUX'),
+              dict(entity='binary_sensor.' ~ prefix ~ '_line_in_reported_signal', name='LINE IN'),
+              dict(entity='binary_sensor.' ~ prefix ~ '_usb_reported_signal', name='USB'),
+              dict(entity='binary_sensor.' ~ prefix ~ '_bluetooth_reported_signal', name='Bluetooth flag')
             ])] %}
           {% endfor %}
           {{ ns.cards }}
@@ -145,7 +153,11 @@ views:
               dict(type='section', label='Connection'),
               dict(entity='binary_sensor.' ~ prefix ~ '_tws_connected', name='TWS control'),
               dict(entity='binary_sensor.' ~ prefix ~ '_spp_connected', name='Input control'),
-              dict(entity='binary_sensor.' ~ prefix ~ '_selected_input_signal', name='Input signal')
+              dict(type='section', label='Input signals (last report)'),
+              dict(entity='binary_sensor.' ~ prefix ~ '_aux_reported_signal', name='AUX'),
+              dict(entity='binary_sensor.' ~ prefix ~ '_line_in_reported_signal', name='LINE IN'),
+              dict(entity='binary_sensor.' ~ prefix ~ '_usb_reported_signal', name='USB'),
+              dict(entity='binary_sensor.' ~ prefix ~ '_bluetooth_reported_signal', name='Bluetooth flag')
             ])] %}
           {% endfor %}
           {{ ns.cards }}

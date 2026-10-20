@@ -20,6 +20,7 @@ required Bluetooth Classic transport. ESP32-S3, C3 and C6 do not.
 | Bass select | Off, Level 1, Level 2 |
 | Lighting select | Off, Pattern 1–4; visual names remain unmapped |
 | Signal activity | Selected AUX/LINE IN/USB electrical signal; Bluetooth unknown |
+| Per-input signal flags | Last reported AUX, LINE IN, USB and Bluetooth bits, independent of selected-source confidence; inactive-input flags may be stale |
 | Diagnostics | Link status, field confidence, power estimate, firmware version, last command, heap and counters |
 
 The player exposes no play/pause, track controls or metadata. Signal activity

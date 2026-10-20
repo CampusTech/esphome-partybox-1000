@@ -194,7 +194,7 @@ class PartyBox : public Component {
   Player* player_{nullptr};
   Choice* choices_[3]{};
   sensor::Sensor* sensors_[9]{};
-  binary_sensor::BinarySensor* binaries_[5]{};
+  binary_sensor::BinarySensor* binaries_[9]{};
   text_sensor::TextSensor* texts_[11]{};
   bool identity_{false}, tws_{false}, spp_connecting_{false}, spp_congested_{false}, pending_spp_{false};
   bool spp_enabled_{true};

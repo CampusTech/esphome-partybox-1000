@@ -9,7 +9,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from esphome import config_validation as cv
 from esphome.core import CORE
 
-from components.partybox import CONFIG_SCHEMA
+from components.partybox import BINARIES, CONFIG_SCHEMA
 
 
 class EntityConfigTests(unittest.TestCase):
@@ -25,7 +25,7 @@ class EntityConfigTests(unittest.TestCase):
     def test_mac_only_enables_public_entities_with_existing_names(self):
         config = self.validate()
         entities = [value for value in config.values() if isinstance(value, dict)]
-        self.assertEqual(len(entities), 38)
+        self.assertEqual(len(entities), 42)
         self.assertTrue(all("name" in entity for entity in entities))
         self.assertTrue(all(not entity.get("internal", False) for entity in entities))
         for key, name in {
@@ -40,6 +40,10 @@ class EntityConfigTests(unittest.TestCase):
             "tws_connected": "TWS connected",
             "spp_connected": "SPP connected",
             "signal_activity": "Selected input signal",
+            "aux_signal": "AUX reported signal",
+            "line_in_signal": "LINE IN reported signal",
+            "usb_signal": "USB reported signal",
+            "bluetooth_signal": "Bluetooth reported signal",
             "smart_dj": "Smart DJ reported",
             "voice_cancel": "Voice cancel reported",
             "last_word": "Last TWS word",
@@ -50,6 +54,29 @@ class EntityConfigTests(unittest.TestCase):
                 self.assertIn(key, config)
                 self.assertEqual(config[key]["name"], name)
                 self.assertFalse(config[key].get("internal", False))
+
+    def test_input_signal_roles_are_appended_and_individually_optional(self):
+        self.assertEqual(
+            BINARIES,
+            [
+                "tws_connected",
+                "spp_connected",
+                "signal_activity",
+                "smart_dj",
+                "voice_cancel",
+                "aux_signal",
+                "line_in_signal",
+                "usb_signal",
+                "bluetooth_signal",
+            ],
+        )
+        for key in BINARIES[5:]:
+            with self.subTest(entity=key):
+                self.setUp()
+                self.assertIs(self.validate(**{key: False})[key], False)
+                self.setUp()
+                config = self.validate(**{key: {"name": "Custom signal"}})
+                self.assertEqual(config[key]["name"], "Custom signal")
 
     def test_unconfigured_bridge_has_pairing_and_address_controls(self):
         config = CONFIG_SCHEMA({})
@@ -152,6 +179,10 @@ class EntityConfigTests(unittest.TestCase):
             "tws_connected",
             "spp_connected",
             "signal_activity",
+            "aux_signal",
+            "line_in_signal",
+            "usb_signal",
+            "bluetooth_signal",
             "firmware_version",
         ]:
             with self.subTest(entity=key):

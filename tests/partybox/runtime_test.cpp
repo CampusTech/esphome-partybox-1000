@@ -579,6 +579,57 @@ int main(int argc, char** argv) {
     assert(host_logs.back() == "EIR length=241 fec=0 name_present=0 manufacturer_len=0 hmpb=0");
     partybox_radio_event(0x0C51, 1, nullptr, 0);
     assert(host_logs.back() == "EIR length=0 fec=-1 name_present=0 manufacturer_len=0 hmpb=0");
+  } else if (test == "input_signal_flags") {
+    esphome::binary_sensor::BinarySensor selected, dj, voice;
+    esphome::binary_sensor::BinarySensor signals[4];
+    t.set_binary(2, &selected);
+    t.set_binary(3, &dj);
+    t.set_binary(4, &voice);
+    for (unsigned bit = 0; bit < 4; ++bit) t.set_binary(5 + bit, &signals[bit]);
+    t.event_(t.word(0x000D0014));
+    t.loop();
+    assert(selected.has_state() && selected.state);  // LINE IN selected, bit 1 clear
+    assert(dj.has_state());  // existing binary indices did not move
+    for (unsigned bit = 0; bit < 4; ++bit)
+      assert(signals[bit].has_state() && signals[bit].state == !(0xD & (1U << bit)));
+    host_now += 200;
+    assert(t.request(Field::SOURCE, 6));
+    t.loop();
+    assert(!selected.has_state());
+    for (const auto& signal : signals) assert(!signal.has_state());
+    t.event_(t.word(0x000E0014));  // fresh raw mask before source ACK
+    t.loop();
+    assert(!selected.has_state());
+    for (unsigned bit = 0; bit < 4; ++bit)
+      assert(signals[bit].has_state() && signals[bit].state == !(0xE & (1U << bit)));
+    Event rx;
+    rx.type = 6;
+    rx.session = 1;
+    rx.value = 42;
+    rx.length = 10;
+    const uint8_t packet[] = {0xBB, 5, 10, 0x9C, 0x2D, 0xBB, 5, 1, 0x2D, 0x46};
+    memcpy(rx.bytes, packet, sizeof(packet));
+    t.event_(rx);
+    t.loop();
+    assert(t.state().source.quality == Quality::ASSUMED && !selected.has_state());
+    for (const auto& signal : signals) assert(signal.has_state());  // ACK preserves fresh mask
+    t.spp_close(42);
+    t.loop();
+    for (const auto& signal : signals) assert(signal.has_state());  // TWS reports do not depend on SPP
+    t.event_(t.word(0x00010013));
+    t.loop();
+    for (const auto& signal : signals) assert(!signal.has_state());
+    t.event_(t.word(0x00000014));
+    t.loop();
+    for (const auto& signal : signals) assert(signal.has_state() && signal.state);
+    t.lost_();
+    t.loop();
+    for (const auto& signal : signals) assert(!signal.has_state());
+    auto snapshot = t.word(0x090B1244);
+    snapshot.session = 9;
+    t.event_(snapshot);
+    t.loop();
+    for (const auto& signal : signals) assert(!signal.has_state());  // no cached previous-session mask
   } else if (test == "protocol_entity_invalidation") {
     Choice source(&t, 0), bass(&t, 1), lighting(&t, 2);
     esphome::text_sensor::TextSensor version, last_word;

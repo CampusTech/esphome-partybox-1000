@@ -526,8 +526,18 @@ class Sensor {
 namespace binary_sensor {
 class BinarySensor {
  public:
-  void publish_state(bool) {}
-  void invalidate_state() {}
+  bool state{false};
+  bool known{false};
+  void publish_state(bool value) {
+    state = value;
+    known = true;
+  }
+  void invalidate_state() {
+    known = false;
+  }
+  bool has_state() const {
+    return known;
+  }
 };
 }  // namespace binary_sensor
 namespace text_sensor {
