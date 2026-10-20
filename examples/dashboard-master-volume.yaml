@@ -1,0 +1,52 @@
+# Home Assistant configuration; merge with an existing template list.
+# First create media_player.office_partyboxes as a Media player group helper.
+template:
+  - switch:
+      - name: Office PartyBoxes audio
+        unique_id: office_partyboxes_audio
+        availability: >-
+          {{ expand(state_attr('media_player.office_partyboxes', 'entity_id') or [])
+             | rejectattr('state', 'in', ['unavailable', 'unknown'])
+             | selectattr('attributes.is_volume_muted', 'defined') | list | count > 0 }}
+        state: >-
+          {% set members = expand(state_attr('media_player.office_partyboxes', 'entity_id') or [])
+             | rejectattr('state', 'in', ['unavailable', 'unknown'])
+             | selectattr('attributes.is_volume_muted', 'defined') | list %}
+          {{ members | selectattr('attributes.is_volume_muted', 'eq', false) | list | count > 0 }}
+        turn_on:
+          - action: media_player.volume_mute
+            target:
+              entity_id: media_player.office_partyboxes
+            data:
+              is_volume_muted: false
+        turn_off:
+          - action: media_player.volume_mute
+            target:
+              entity_id: media_player.office_partyboxes
+            data:
+              is_volume_muted: true
+  - number:
+      - name: Office PartyBoxes volume
+        unique_id: office_partyboxes_volume
+        min: 0
+        max: 1
+        step: 0.03125
+        availability: >-
+          {{ expand(state_attr('media_player.office_partyboxes', 'entity_id') or [])
+             | rejectattr('state', 'in', ['unavailable', 'unknown'])
+             | selectattr('attributes.volume_level', 'defined')
+             | map(attribute='attributes.volume_level')
+             | select('number') | list | count > 0 }}
+        state: >-
+          {% set levels = expand(state_attr('media_player.office_partyboxes', 'entity_id') or [])
+             | rejectattr('state', 'in', ['unavailable', 'unknown'])
+             | selectattr('attributes.volume_level', 'defined')
+             | map(attribute='attributes.volume_level')
+             | select('number') | list %}
+          {{ levels | average if levels else none }}
+        set_value:
+          - action: media_player.volume_set
+            target:
+              entity_id: media_player.office_partyboxes
+            data:
+              volume_level: "{{ value }}"

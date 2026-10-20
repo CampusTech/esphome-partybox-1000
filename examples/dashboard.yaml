@@ -1,0 +1,136 @@
+views:
+- title: Office audio
+  path: office
+  icon: mdi:speaker-multiple
+  type: sections
+  max_columns: 3
+  sections:
+  - type: grid
+    column_span: 3
+    cards:
+    - type: heading
+      heading: Office PartyBoxes
+      heading_style: title
+      icon: mdi:speaker-multiple
+    - type: custom:auto-entities
+      card:
+        type: custom:custom-mixer-card
+        title: Volume mixer
+        description: All speakers sets the same volume everywhere; its readout shows
+          the group average.
+        faderWidth: 112px
+        faderHeight: 260px
+        faderTheme: physical
+        faderActiveColor: '#38bdf8'
+        faderInactiveColor: '#64748b'
+        updateWhileMoving: false
+        alwaysShowFaderValue: true
+        showActiveButton: true
+      card_param: faders
+      filter:
+        template: |-
+          {% set group = 'media_player.office_partyboxes' %}
+          {% set ns = namespace(faders=[dict(entity_id='number.office_partyboxes_volume', name='All speakers', active_color='#a78bfa', active_entity_id='switch.office_partyboxes_audio')]) %}
+          {% for player in state_attr(group, 'entity_id') or [] %}
+            {% set name = (state_attr(player, 'friendly_name') or player) | regex_replace('(?i) player$', '') | replace(' Office PartyBox', '') %}
+            {% set ns.faders = ns.faders + [dict(entity_id=player, name=name)] %}
+          {% endfor %}
+          {{ ns.faders }}
+      grid_options:
+        columns: full
+    - type: heading
+      heading: Speaker controls
+      heading_style: subtitle
+    - type: custom:auto-entities
+      card:
+        type: grid
+        columns: 3
+        square: false
+      card_param: cards
+      filter:
+        template: |-
+          {% set ns = namespace(cards=[]) %}
+          {% for player in state_attr('media_player.office_partyboxes', 'entity_id') or [] %}
+            {% set prefix = player | replace('media_player.', '') | regex_replace('_player$', '') %}
+            {% set name = (state_attr(player, 'friendly_name') or player) | regex_replace('(?i) player$', '') %}
+            {% set ns.cards = ns.cards + [dict(type='entities', title=name, show_header_toggle=false, entities=[
+              dict(entity='select.' ~ prefix ~ '_source', name='Input'),
+              dict(entity='select.' ~ prefix ~ '_bass_boost', name='Bass boost'),
+              dict(entity='select.' ~ prefix ~ '_lighting', name='Lighting'),
+              dict(type='section', label='Power'),
+              dict(entity='button.' ~ prefix ~ '_wake', name='Wake'),
+              dict(entity='button.' ~ prefix ~ '_standby', name='Standby'),
+              dict(type='section', label='Connection'),
+              dict(entity='binary_sensor.' ~ prefix ~ '_tws_connected', name='TWS control'),
+              dict(entity='binary_sensor.' ~ prefix ~ '_spp_connected', name='Input control'),
+              dict(entity='binary_sensor.' ~ prefix ~ '_selected_input_signal', name='Input signal')
+            ])] %}
+          {% endfor %}
+          {{ ns.cards }}
+      grid_options:
+        columns: full
+      visibility:
+      - condition: screen
+        media_query: '(min-width: 1000px)'
+    - type: custom:auto-entities
+      card:
+        type: grid
+        columns: 2
+        square: false
+      card_param: cards
+      filter:
+        template: |-
+          {% set ns = namespace(cards=[]) %}
+          {% for player in state_attr('media_player.office_partyboxes', 'entity_id') or [] %}
+            {% set prefix = player | replace('media_player.', '') | regex_replace('_player$', '') %}
+            {% set name = (state_attr(player, 'friendly_name') or player) | regex_replace('(?i) player$', '') %}
+            {% set ns.cards = ns.cards + [dict(type='entities', title=name, show_header_toggle=false, entities=[
+              dict(entity='select.' ~ prefix ~ '_source', name='Input'),
+              dict(entity='select.' ~ prefix ~ '_bass_boost', name='Bass boost'),
+              dict(entity='select.' ~ prefix ~ '_lighting', name='Lighting'),
+              dict(type='section', label='Power'),
+              dict(entity='button.' ~ prefix ~ '_wake', name='Wake'),
+              dict(entity='button.' ~ prefix ~ '_standby', name='Standby'),
+              dict(type='section', label='Connection'),
+              dict(entity='binary_sensor.' ~ prefix ~ '_tws_connected', name='TWS control'),
+              dict(entity='binary_sensor.' ~ prefix ~ '_spp_connected', name='Input control'),
+              dict(entity='binary_sensor.' ~ prefix ~ '_selected_input_signal', name='Input signal')
+            ])] %}
+          {% endfor %}
+          {{ ns.cards }}
+      grid_options:
+        columns: full
+      visibility:
+      - condition: screen
+        media_query: '(min-width: 600px) and (max-width: 999px)'
+    - type: custom:auto-entities
+      card:
+        type: grid
+        columns: 1
+        square: false
+      card_param: cards
+      filter:
+        template: |-
+          {% set ns = namespace(cards=[]) %}
+          {% for player in state_attr('media_player.office_partyboxes', 'entity_id') or [] %}
+            {% set prefix = player | replace('media_player.', '') | regex_replace('_player$', '') %}
+            {% set name = (state_attr(player, 'friendly_name') or player) | regex_replace('(?i) player$', '') %}
+            {% set ns.cards = ns.cards + [dict(type='entities', title=name, show_header_toggle=false, entities=[
+              dict(entity='select.' ~ prefix ~ '_source', name='Input'),
+              dict(entity='select.' ~ prefix ~ '_bass_boost', name='Bass boost'),
+              dict(entity='select.' ~ prefix ~ '_lighting', name='Lighting'),
+              dict(type='section', label='Power'),
+              dict(entity='button.' ~ prefix ~ '_wake', name='Wake'),
+              dict(entity='button.' ~ prefix ~ '_standby', name='Standby'),
+              dict(type='section', label='Connection'),
+              dict(entity='binary_sensor.' ~ prefix ~ '_tws_connected', name='TWS control'),
+              dict(entity='binary_sensor.' ~ prefix ~ '_spp_connected', name='Input control'),
+              dict(entity='binary_sensor.' ~ prefix ~ '_selected_input_signal', name='Input signal')
+            ])] %}
+          {% endfor %}
+          {{ ns.cards }}
+      grid_options:
+        columns: full
+      visibility:
+      - condition: screen
+        media_query: '(max-width: 599px)'

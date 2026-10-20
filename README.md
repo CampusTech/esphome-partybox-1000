@@ -37,6 +37,10 @@ those retained values matter. See [protocol and state semantics](docs/protocol.m
 For source selection and bass sound modes inside a single HA media player, use
 the optional [Home Assistant wrapper](docs/home-assistant.md).
 
+For multiple speakers, the [expandable mixer dashboard](docs/dashboard.md)
+provides a master volume fader, individual faders and speaker controls. Adding
+a player to one group helper expands the dashboard automatically.
+
 ## Pairing without a MAC address
 
 The current checkout adds a **Pair speaker** button in HA. Put the intended JBL
